@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ ====================
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+ Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
+
+ The contents of this file are subject to the terms of the Common Development
+ and Distribution License("CDDL") (the "License").  You may not use this file
+ except in compliance with the License.
+
+ You can obtain a copy of the License at
+ http://IdentityConnectors.dev.java.net/legal/license.txt
+ See the License for the specific language governing permissions and limitations
+ under the License.
+
+ When distributing the Covered Code, include this CDDL Header Notice in each file
+ and include the License file at identityconnectors/legal/license.txt.
+ If applicable, add the following below this CDDL Header, with the fields
+ enclosed by brackets [] replaced by your own identifying information:
+ "Portions Copyrighted [year] [name of copyright owner]"
+ ====================
+-->
+<config>
+  <property name="configuration.CreateScriptFileName" value="..\..\..\Samples\Tests\Create.ps1"/>
+  <property name="configuration.UpdateScriptFileName" value="..\..\..\Samples\Tests\Update.ps1"/>
+  <property name="configuration.DeleteScriptFileName" value="..\..\..\Samples\Tests\\Delete.ps1"/>
+  <property name="configuration.SearchScriptFileName" value="..\..\..\Samples\Tests\Search.ps1"/>
+  <property name="configuration.TestScriptFileName" value="..\..\..\Samples\Tests\Test.ps1"/>
+  <property name="configuration.SchemaScriptFileName" value="..\..\..\Samples\Tests\Schema.ps1"/>
+  <property name="configuration.SyncScriptFileName" value="..\..\..\Samples\Tests\Sync.ps1"/>
+  <property name="configuration.AuthenticateScriptFileName" value="..\..\..\Samples\Tests\Authenticate.ps1"/>
+  <property name="configuration.ResolveUsernameScriptFileName" value="..\..\..\Samples\Tests\ResolveUsername.ps1"/>
+  <property name="configuration.UidAttributeName" value="__UID__"/>
+  <property name="configuration.NameAttributeName" value="__NAME__"/>
+  <property name="configuration.QueryFilterType" value="Map"/>
+  <property name="configuration.SubstituteUidAndNameInQueryFilter" value="False"/>
+  <property name="configuration.VariablesPrefix" value="Connector"/>
+</config>
