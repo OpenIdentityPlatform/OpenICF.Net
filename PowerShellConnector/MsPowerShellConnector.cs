@@ -400,7 +400,6 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             Trace.TraceInformation("Invoke Update ObjectClass: {0}/Uid:{1}", objectClass.GetObjectClassValue(),uid.GetUidValue());
             try
             {
-                var dir = System.IO.Directory.GetCurrentDirectory();
                 Uid uidAfter = ExecuteUpdate(_configuration.UpdateScriptFileName, objectClass, uid, valuesToReplace, options);
                 if (uidAfter == null)
                     throw new ConnectorException("Update script didn't return with a valid uid (__UID__) value");
