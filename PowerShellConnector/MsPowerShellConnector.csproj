@@ -33,8 +33,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common" />
-    <Reference Include="Framework" />
+    <Reference Include="Common">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>$(ConnectorFrameworkDir)\Common.dll</HintPath>
+	  <Private>False</Private>
+	</Reference>
+	<Reference Include="Framework">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>$(ConnectorFrameworkDir)\Framework.dll</HintPath>
+	  <Private>False</Private>
+	</Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
