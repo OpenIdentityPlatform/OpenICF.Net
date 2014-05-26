@@ -22,6 +22,8 @@
  * "Portions Copyrighted [year] [name of copyright owner]"
  */
 using System;
+using Org.IdentityConnectors.Common;
+using Org.IdentityConnectors.Framework.Common.Objects;
 using Org.IdentityConnectors.Framework.Spi;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -34,51 +36,79 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
     {
         private Collection<String> _validScripts;
 
+        [ConfigurationProperty(DisplayMessageKey = "display_AuthenticateScriptFileName", HelpMessageKey = "help_AuthenticateScriptFileName",
+            GroupMessageKey = "group_OperationScripts", Order = 1)]  
         public String AuthenticateScriptFileName
         { get; set; }
 
+        [ConfigurationProperty(DisplayMessageKey = "display_CreateScriptFileName", HelpMessageKey = "help_CreateScriptFileName",
+            GroupMessageKey = "group_OperationScripts", Order = 2)] 
         public String CreateScriptFileName
         { get; set; }
 
-        public String UpdateScriptFileName
-        { get; set; }
 
+        [ConfigurationProperty(DisplayMessageKey = "display_DeleteScriptFileName", HelpMessageKey = "help_DeleteScriptFileName",
+            GroupMessageKey = "group_OperationScripts", Order = 3)] 
         public String DeleteScriptFileName
         { get; set; }
 
+        [ConfigurationProperty(DisplayMessageKey = "display_ResolveUsernameScriptFileName", HelpMessageKey = "help_ResolveUsernameScriptFileName",
+            GroupMessageKey = "group_OperationScripts", Order = 4)] 
         public String ResolveUsernameScriptFileName
         { get; set; }
 
-        public String ScriptOnConnectorScriptFileName
-        { get; set; }
-
-        public String ScriptOnResourceScriptFileName
-        { get; set; }
-
-        public String SearchScriptFileName
-        { get; set; }
-
-        public String SyncScriptFileName
-        { get; set; }
-
+        [ConfigurationProperty(DisplayMessageKey = "display_SchemaScriptFileName", HelpMessageKey = "help_SchemaScriptFileName",
+            GroupMessageKey = "group_OperationScripts", Order = 5)]
         public String SchemaScriptFileName
         { get; set; }
 
+        [ConfigurationProperty(DisplayMessageKey = "display_ScriptOnResourceScriptFileName", HelpMessageKey = "help_ScriptOnResourceScriptFileName",
+            GroupMessageKey = "group_OperationScripts", Order = 6)] 
+        public String ScriptOnResourceScriptFileName
+        { get; set; }
+
+        [ConfigurationProperty(DisplayMessageKey = "display_SearchScriptFileName", HelpMessageKey = "help_SearchScriptFileName",
+            GroupMessageKey = "group_OperationScripts", Order = 7)] 
+        public String SearchScriptFileName
+        { get; set; }
+
+        [ConfigurationProperty(DisplayMessageKey = "display_SyncScriptFileName", HelpMessageKey = "help_SyncScriptFileName",
+            GroupMessageKey = "group_OperationScripts", Order = 8)] 
+        public String SyncScriptFileName
+        { get; set; }
+
+        [ConfigurationProperty(DisplayMessageKey = "display_TestScriptFileName", HelpMessageKey = "help_TestScriptFileName",
+            GroupMessageKey = "group_OperationScripts", Order = 9)] 
         public String TestScriptFileName
         { get; set; }
 
+        [ConfigurationProperty(DisplayMessageKey = "display_UpdateScriptFileName", HelpMessageKey = "help_UpdateScriptFileName",
+            GroupMessageKey = "group_OperationScripts", Order = 10)]
+        public String UpdateScriptFileName
+        { get; set; }
+
+        [ConfigurationProperty(Required = true, DisplayMessageKey = "display_VariablesPrefix", HelpMessageKey = "help_VariablesPrefix",
+            GroupMessageKey = "group_PowerShell", Order = 12)] 
         public String VariablesPrefix
         { get; set;  }
 
+        [ConfigurationProperty(Required = true, DisplayMessageKey = "display_QueryFilterType", HelpMessageKey = "help_QueryFilterType",
+            GroupMessageKey = "group_PowerShell", Order = 16)]
         public String QueryFilterType 
         { get; set; }
 
+        [ConfigurationProperty(DisplayMessageKey = "display_SubstituteUidAndNameInQueryFilter", HelpMessageKey = "help_SubstituteUidAndNameInQueryFilter",
+            GroupMessageKey = "group_PowerShell", Order = 15)]
         public Boolean SubstituteUidAndNameInQueryFilter
         { get; set; }
 
+        [ConfigurationProperty(DisplayMessageKey = "display_UidAttributeName", HelpMessageKey = "help_UidAttributeName",
+            GroupMessageKey = "group_PowerShell", Order = 13)]
         public String UidAttributeName
         { get; set; }
 
+        [ConfigurationProperty(DisplayMessageKey = "display_NameAttributeName", HelpMessageKey = "help_NameAttributeName",
+            GroupMessageKey = "group_PowerShell", Order = 14)]
         public String NameAttributeName
         { get; set; }
 
@@ -86,20 +116,19 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         {
             AuthenticateScriptFileName = "";
             CreateScriptFileName = "";
-            UpdateScriptFileName = "";
             DeleteScriptFileName = "";
             ResolveUsernameScriptFileName = "";
-            ScriptOnConnectorScriptFileName = "";
+            SchemaScriptFileName = "";
             ScriptOnResourceScriptFileName = "";
             SearchScriptFileName = "";
-            SyncScriptFileName = "";
-            SchemaScriptFileName = "";
+            SyncScriptFileName = "";            
             TestScriptFileName = "";
+            UpdateScriptFileName = "";
             VariablesPrefix = "Connector";
-            QueryFilterType = "Map";
+            QueryFilterType = MsPowerShellConnector.Visitors.Map.ToString();
             SubstituteUidAndNameInQueryFilter = false;
-            UidAttributeName = "__UID__";
-            NameAttributeName = "__NAME__";
+            UidAttributeName = Uid.NAME;
+            NameAttributeName = Name.NAME;
         }
 
         public override void Validate()
@@ -108,15 +137,14 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             {
                 AuthenticateScriptFileName,
                 CreateScriptFileName, 
-                UpdateScriptFileName, 
-                DeleteScriptFileName,
-                TestScriptFileName,
+                DeleteScriptFileName,                
                 ResolveUsernameScriptFileName, 
-                ScriptOnConnectorScriptFileName,
+                SchemaScriptFileName,
                 ScriptOnResourceScriptFileName, 
                 SearchScriptFileName, 
                 SyncScriptFileName,
-                SchemaScriptFileName
+                TestScriptFileName,
+                UpdateScriptFileName
             };
 
             _validScripts = new Collection<string>();
@@ -124,7 +152,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             Trace.TraceInformation("Entering Validate() configuration"); 
             foreach (var file in scriptsList)
             {
-                if ((file != null) && (!file.Equals("")))
+                if (StringUtil.IsNotBlank(file))
                 {
                     System.IO.FileStream fs = null;
                     try
@@ -143,13 +171,15 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                 }
             }
 
-            if ((VariablesPrefix == null) || ("".Equals(VariablesPrefix)))
+            if (StringUtil.IsBlank(VariablesPrefix))
             {
                 throw new ConfigurationException("VariablesPrefix can not be empty or null");
             }
 
-            if (!("Map".Equals(QueryFilterType) || "Ldap".Equals(QueryFilterType) || "Native".Equals(QueryFilterType) ||
-                "AdPsModule".Equals(QueryFilterType)))
+            if (!("Map".Equals(QueryFilterType, StringComparison.InvariantCultureIgnoreCase) 
+                || "Ldap".Equals(QueryFilterType, StringComparison.InvariantCultureIgnoreCase)
+                || "Native".Equals(QueryFilterType, StringComparison.InvariantCultureIgnoreCase)
+                || "AdPsModule".Equals(QueryFilterType, StringComparison.InvariantCultureIgnoreCase)))
             {
                 throw new ConfigurationException("QueryFilterType must be Native|Map|Ldap|AdPsModule");
             }
@@ -157,7 +187,17 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 
         public void Release()
         {
-            
+            if (null != _host)
+            {
+                lock (this)
+                {
+                    if (null != _host)
+                    {
+                        _host.Dispose();
+                        _host = null;
+                    }
+                }
+            }
         }
 
         public Collection<String> GetValidScripts()

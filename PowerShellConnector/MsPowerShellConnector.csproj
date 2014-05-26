@@ -34,15 +34,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Common">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>$(ConnectorFrameworkDir)\Common.dll</HintPath>
-	  <Private>False</Private>
-	</Reference>
-	<Reference Include="Framework">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>$(ConnectorFrameworkDir)\Framework.dll</HintPath>
-	  <Private>False</Private>
-	</Reference>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ConnectorFrameworkDir)\Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Framework">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ConnectorFrameworkDir)\Framework.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
@@ -66,6 +66,11 @@
     <Compile Include="MsPowerShellSyncTokenHandler.cs" />
     <Compile Include="MsPowerShellUidHandler.cs" />
     <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Messages.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildProjectDirectory)\..\PowerShellConnectorBuild.Targets" />
 </Project>

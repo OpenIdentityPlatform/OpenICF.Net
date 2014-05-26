@@ -35,6 +35,25 @@ using Org.IdentityConnectors.Framework.Common.Exceptions;
 
 namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 {
+
+    public enum OperationType
+    {
+        AUTHENTICATE,
+        CREATE,
+        DELETE,
+        GET_LATEST_SYNC_TOKEN,
+        RESOLVE_USERNAME,
+        SCHEMA,
+        SEARCH,
+        SYNC,
+        TEST,
+        RUNSCRIPTONCONNECTOR,
+        RUNSCRIPTONRESOURCE,
+        UPDATE,
+        //ADD_ATTRIBUTE_VALUES,
+        //REMOVE_ATTRIBUTE_VALUES
+    };
+
     [ConnectorClass("connector_displayName",
                      typeof(MsPowerShellConfiguration),
                      MessageCatalogPaths = new[] { "Org.ForgeRock.OpenICF.Connectors.MsPowerShell.Messages" }
@@ -45,7 +64,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         protected static String Username = "Username";
         protected static String Password = "Password";
         protected static String Action = "Action";
-        protected static String OperationType = "OperationType";
+        protected static String OperationTypeName = "OperationType";
         protected static String ObjectClass = "ObjectClass";
         protected static String Uid = "Uid";
         protected static String Id = "Id";
@@ -70,23 +89,6 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         private String _scriptPrefix = "Connector";
         private Hashtable _attrSubstitute;
 
-        public enum Actions
-        {
-            AUTHENTICATE,
-            CREATE,
-            DELETE,
-            GET_LATEST_SYNC_TOKEN,
-            RESOLVE_USERNAME,
-            SCHEMA,
-            SEARCH,
-            SYNC,
-            TEST,
-            RUNSCRIPTONCONNECTOR,
-            RUNSCRIPTONRESOURCE,
-            UPDATE,
-            //ADD_ATTRIBUTE_VALUES,
-            //REMOVE_ATTRIBUTE_VALUES
-        };
 
         public enum Visitors
         {
@@ -168,7 +170,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 
         protected void ExecuteTest(String scriptName)
         {
-            ExecuteScriptFile(scriptName, CreateBinding(new Dictionary<String, Object>(), Actions.TEST, null, null, null, null));
+            ExecuteScriptFile(scriptName, CreateBinding(new Dictionary<String, Object>(), OperationType.TEST, null, null, null, null));
         }
         #endregion
 
@@ -204,7 +206,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                 {SchemaBldr, scb}
             };
 
-            ExecuteScriptFile(scriptName, CreateBinding(arguments, Actions.SCHEMA, null, null, null, null));
+            ExecuteScriptFile(scriptName, CreateBinding(arguments, OperationType.SCHEMA, null, null, null, null));
             return scb.Build();
         }
 
@@ -247,7 +249,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                 {Username, username}
             };
 
-            ExecuteScriptFile(scriptName, CreateBinding(arguments, Actions.RESOLVE_USERNAME, objectClass, null, null, options));
+            ExecuteScriptFile(scriptName, CreateBinding(arguments, OperationType.RESOLVE_USERNAME, objectClass, null, null, options));
             return result.Uid;
         }
 
@@ -294,7 +296,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                 {Password, SecurityUtil.Decrypt(password)}
             };
 
-            ExecuteScriptFile(scriptName, CreateBinding(arguments, Actions.AUTHENTICATE, objectClass, null, null, options));
+            ExecuteScriptFile(scriptName, CreateBinding(arguments, OperationType.AUTHENTICATE, objectClass, null, null, options));
             return result.Uid;
         }
 
@@ -353,9 +355,9 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                         break;
                 }
             }
-                
 
-            ExecuteScriptFile(scriptName, CreateBinding(arguments, Actions.SEARCH, objectClass, null, null, options));
+
+            ExecuteScriptFile(scriptName, CreateBinding(arguments, OperationType.SEARCH, objectClass, null, null, options));
         }
         #endregion
 
@@ -388,7 +390,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             if (ConnectorAttributeUtil.GetNameFromAttributes(createAttributes) != null)
                 arguments.Add(Id, ConnectorAttributeUtil.GetNameFromAttributes(createAttributes).GetNameValue());
 
-            ExecuteScriptFile(scriptName, CreateBinding(arguments, Actions.CREATE, objectClass, null, createAttributes, options));
+            ExecuteScriptFile(scriptName, CreateBinding(arguments, OperationType.CREATE, objectClass, null, createAttributes, options));
             return result.Uid.GetUidValue() != null ? result.Uid : null;
         }
 
@@ -424,7 +426,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                 {Result, result},
             };
 
-            ExecuteScriptFile(scriptName, CreateBinding(arguments, Actions.UPDATE, objectClass, uid, updateAttributes, options));
+            ExecuteScriptFile(scriptName, CreateBinding(arguments, OperationType.UPDATE, objectClass, uid, updateAttributes, options));
             return result.Uid.GetUidValue() != null ? result.Uid : null;
         }
 
@@ -452,7 +454,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 
         protected void ExecuteDelete(String scriptName, ObjectClass objectClass, Uid uid, OperationOptions options)
         {
-            ExecuteScriptFile(scriptName, CreateBinding(new Dictionary<String, Object>(), Actions.DELETE, objectClass, uid, null, options));
+            ExecuteScriptFile(scriptName, CreateBinding(new Dictionary<String, Object>(), OperationType.DELETE, objectClass, uid, null, options));
         }
 
         #endregion
@@ -486,8 +488,8 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         {
             var result = new MsPowerShellSyncTokenHandler();
             var arguments = new Dictionary<String, Object> { { Result, result } };
-            
-            ExecuteScriptFile(scriptName, CreateBinding(arguments, Actions.GET_LATEST_SYNC_TOKEN, objectClass, null, null, null));
+
+            ExecuteScriptFile(scriptName, CreateBinding(arguments, OperationType.GET_LATEST_SYNC_TOKEN, objectClass, null, null, null));
             return result.SyncToken;
         }
 
@@ -522,7 +524,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             };
             if (token != null) arguments.Add(Token, token.Value);
 
-            ExecuteScriptFile(scriptName, CreateBinding(arguments, Actions.SYNC, objectClass, null, null, options));
+            ExecuteScriptFile(scriptName, CreateBinding(arguments, OperationType.SYNC, objectClass, null, null, options));
         }
         #endregion
 
@@ -553,20 +555,20 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                 {ScriptArguments, request.ScriptArguments}
             };
 
-            return ExecuteScript(request.ScriptText,CreateBinding(arguments, Actions.RUNSCRIPTONCONNECTOR, null, null, null, options));
+            return ExecuteScript(request.ScriptText, CreateBinding(arguments, OperationType.RUNSCRIPTONCONNECTOR, null, null, null, options));
         }
         #endregion
 
         #region protected members
 
-        protected Dictionary<String, Object> CreateBinding(Dictionary<String, Object> arguments, Actions action,
+        protected Dictionary<String, Object> CreateBinding(Dictionary<String, Object> arguments, OperationType operationType,
             ObjectClass objectClass, Uid uid, ICollection<ConnectorAttribute> attributes,
             OperationOptions options)
         {
             var binding = new Dictionary<String, Object>();
 
-            arguments.Add(Action, action);
-            arguments.Add(OperationType, action);
+            arguments.Add(Action, operationType);
+            arguments.Add(OperationTypeName, operationType);
             arguments.Add(Configuration, _configuration);
             
             if (uid != null) 
