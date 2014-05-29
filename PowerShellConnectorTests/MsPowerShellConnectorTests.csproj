@@ -35,25 +35,21 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Common">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>$(ConnectorFrameworkDir)\Common.dll</HintPath>
-	  <Private>False</Private>
-	</Reference>
-	<Reference Include="Framework">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>$(ConnectorFrameworkDir)\Framework.dll</HintPath>
-	  <Private>False</Private>
-	</Reference> 
-	<Reference Include="Framework">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>$(ConnectorFrameworkDir)\FrameworkInternal.dll</HintPath>
-	  <Private>False</Private>
-	</Reference>
-	<Reference Include="Framework">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>$(ConnectorFrameworkDir)\TestCommon.dll</HintPath>
-	  <Private>False</Private>
-	</Reference>	
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ConnectorFrameworkDir)\Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Framework">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ConnectorFrameworkDir)\Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="FrameworkInternal">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ConnectorFrameworkDir)\FrameworkInternal.dll</HintPath>
+    </Reference>
+    <Reference Include="TestCommon">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ConnectorFrameworkDir)\TestCommon.dll</HintPath>
+    </Reference>	
     <Reference Include="System.Management.Automation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
 	</Reference>                   

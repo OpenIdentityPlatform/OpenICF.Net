@@ -34,6 +34,8 @@ using Org.IdentityConnectors.Framework.Api;
 using Org.IdentityConnectors.Framework.Common.Exceptions;
 using Org.IdentityConnectors.Framework.Common.Objects;
 using Org.IdentityConnectors.Framework.Common.Objects.Filters;
+using Org.IdentityConnectors.Framework.Common.Serializer;
+using Org.IdentityConnectors.Framework.Impl.Api.Local;
 using Org.IdentityConnectors.Framework.Spi;
 using Org.IdentityConnectors.Test.Common;
 
@@ -45,6 +47,22 @@ namespace MSPowerShellConnectorTests
         private ConnectorFacade _facade = null;
         private static readonly ObjectClass Test = new ObjectClass("__TEST__");
         private const String Password = "Passw0rd";
+
+        [TestFixtureSetUp]
+        public void Init()
+        {
+            GetFacade();
+        }
+
+        [TestFixtureTearDown]
+        public void Cleanup()
+        {
+            if (null != _facade)
+            {
+                ((LocalConnectorFacadeImpl) _facade).Dispose();
+                _facade = null;
+            }
+        }
 
         // =====================================================
         // Test Operation Test
@@ -95,16 +113,10 @@ namespace MSPowerShellConnectorTests
 
         [Test]
         [Category("Authenticate")]
+        [ExpectedException(typeof(PasswordExpiredException))]
         public void TestAuthenticate5()
         {
-            Assert.AreEqual("TEST5",GetFacade().Authenticate(Test, "TEST5", new GuardedString(GetSecure(Password)), null).GetUidValue());
-        }
-
-        [Test]
-        [Category("Authenticate")]
-        public void TestAuthenticate6()
-        {
-            Assert.AreEqual("TEST6", GetFacade().Authenticate(Test, "TEST6", new GuardedString(GetSecure(Password)), null).GetUidValue());
+            GetFacade().Authenticate(Test, "TEST5", new GuardedString(GetSecure(Password)), null);
         }
 
         [Test]
@@ -113,6 +125,20 @@ namespace MSPowerShellConnectorTests
         public void TestAuthenticate7()
         {
             GetFacade().Authenticate(Test, "TEST7", new GuardedString(GetSecure(Password)), null);
+        }
+
+        [Test]
+        [Category("Authenticate")]
+        public void TestAuthenticateOk()
+        {
+            Assert.AreEqual("TESTOK1", GetFacade().Authenticate(Test, "TESTOK1", new GuardedString(GetSecure(Password)), null).GetUidValue());
+        }
+
+        [Test]
+        [Category("Authenticate")]
+        public void TestAuthenticateEmpty()
+        {
+            Assert.AreEqual("TESTOK2", GetFacade().Authenticate(Test, "TESTOK2", new GuardedString(GetSecure("")), null).GetUidValue());
         }
 
 
@@ -171,7 +197,7 @@ namespace MSPowerShellConnectorTests
         [Category("Create")]
         public void TestCreate6()
         {
-            Assert.AreEqual("TEST6", GetFacade().Create(Test, GetTestCreateConnectorObject("TEST6"), null).GetUidValue());
+            Assert.AreEqual(new Uid("TEST6", "1"), GetFacade().Create(Test, GetTestCreateConnectorObject("TEST6"), null));
         }
 
         [Test]
@@ -230,7 +256,7 @@ namespace MSPowerShellConnectorTests
         [Category("Update")]
         public void TestUpdate5()
         {
-            Assert.AreEqual("TEST5",GetFacade().Update(Test, new Uid("TEST5"), GetTestUpdateConnectorObject("TEST5"), null).GetUidValue());
+            Assert.AreEqual("TEST5", GetFacade().Update(Test, new Uid("TEST5"), GetTestUpdateConnectorObject("TEST5"), null).GetUidValue());
         }
 
         [Test]
@@ -247,7 +273,7 @@ namespace MSPowerShellConnectorTests
         {
             GetFacade().Update(ObjectClass.GROUP, new Uid("Group1"), GetTestUpdateConnectorObject("Group1"), null);
         }
-    
+
         // =====================================================
         // Delete Operation Test
         // =====================================================
@@ -278,7 +304,7 @@ namespace MSPowerShellConnectorTests
         [Category("ResolveUsername")]
         public void TestResolveUsername1()
         {
-            Assert.AreEqual("123",GetFacade().ResolveUsername(ObjectClass.ACCOUNT, "TEST1", null).GetUidValue());
+            Assert.AreEqual("123", GetFacade().ResolveUsername(ObjectClass.ACCOUNT, "TESTOK1", null).GetUidValue());
         }
 
         [Test]
@@ -288,6 +314,15 @@ namespace MSPowerShellConnectorTests
         {
             GetFacade().ResolveUsername(ObjectClass.ACCOUNT, "NON_EXIST", null);
         }
+
+        [Test]
+        [Category("ResolveUsername")]
+        [ExpectedException(typeof(RuntimeException))]
+        public void TestResolveUsername3()
+        {
+            GetFacade().ResolveUsername(Test, "NON_EXIST", null);
+        }
+
 
         // =====================================================
         // Schema Operation Test
@@ -301,6 +336,7 @@ namespace MSPowerShellConnectorTests
             Assert.NotNull(schema.FindObjectClassInfo("__TEST__"));
             Assert.NotNull(schema.FindObjectClassInfo("__ACCOUNT__"));
             Assert.NotNull(schema.FindObjectClassInfo("__GROUP__"));
+            Console.WriteLine(SerializerUtil.SerializeXmlObject(schema, true));
         }
 
 
@@ -322,7 +358,7 @@ namespace MSPowerShellConnectorTests
         public void TestNullQuery()
         {
             var result = new List<ConnectorObject>();
-            GetFacade().Search(ObjectClass.ACCOUNT, null , new ResultsHandler()
+            GetFacade().Search(ObjectClass.ACCOUNT, null, new ResultsHandler()
             {
                 Handle = connectorObject => { result.Add(connectorObject); return true; }
             }, null);
@@ -339,7 +375,7 @@ namespace MSPowerShellConnectorTests
                 Handle = connectorObject => { result.Add(connectorObject); return true; }
             }, null);
 
-            Assert.AreEqual(1,result.Count);
+            Assert.AreEqual(1, result.Count);
             var co = result[0];
             Assert.IsTrue("User 1".Equals(co.Name.GetNameValue()));
         }
@@ -367,10 +403,10 @@ namespace MSPowerShellConnectorTests
         [Category("Sync")]
         public void TestSyncToken()
         {
-            Assert.AreEqual(17,GetFacade().GetLatestSyncToken(ObjectClass.ACCOUNT).Value);
-            Assert.AreEqual(16,GetFacade().GetLatestSyncToken(ObjectClass.GROUP).Value);
-            Assert.AreEqual(17,GetFacade().GetLatestSyncToken(ObjectClass.ALL).Value);
-            Assert.IsInstanceOf(typeof (string),GetFacade().GetLatestSyncToken(Test).Value);
+            Assert.AreEqual(17, GetFacade().GetLatestSyncToken(ObjectClass.ACCOUNT).Value);
+            Assert.AreEqual(16, GetFacade().GetLatestSyncToken(ObjectClass.GROUP).Value);
+            Assert.AreEqual(17, GetFacade().GetLatestSyncToken(ObjectClass.ALL).Value);
+            Assert.IsInstanceOf(typeof(string), GetFacade().GetLatestSyncToken(Test).Value);
         }
 
         [Test]
@@ -381,8 +417,10 @@ namespace MSPowerShellConnectorTests
 
             SyncToken lastToken = GetFacade().Sync(ObjectClass.ACCOUNT, new SyncToken(0), new SyncResultsHandler()
                 {
-                    Handle = delta => { result.Add(delta);
-                                          return true;
+                    Handle = delta =>
+                    {
+                        result.Add(delta);
+                        return true;
                     }
                 }, null);
             Assert.AreEqual(1, lastToken.Value);
@@ -436,7 +474,7 @@ namespace MSPowerShellConnectorTests
             result.RemoveAt(0);
             Assert.AreEqual(SyncDeltaType.UPDATE, sdelta.DeltaType);
             Assert.AreEqual(4, sdelta.Object.GetAttributes().Count);
-            Assert.AreEqual("001",sdelta.PreviousUid.GetUidValue());
+            Assert.AreEqual("001", sdelta.PreviousUid.GetUidValue());
 
             lastToken = GetFacade().Sync(ObjectClass.ACCOUNT, lastToken, new SyncResultsHandler()
             {
@@ -472,7 +510,7 @@ namespace MSPowerShellConnectorTests
                 }
             }, null);
             Assert.AreEqual(13, lastToken.Value);
-            Assert.AreEqual(3,result.Count);
+            Assert.AreEqual(3, result.Count);
 
         }
 
@@ -567,15 +605,15 @@ namespace MSPowerShellConnectorTests
 
         protected ConnectorFacade GetFacade()
         {
-            var f = CreateConnectorFacade(SafeType<Connector>.ForRawType(typeof (MsPowerShellConnector)));
+            var f = CreateConnectorFacade(SafeType<Connector>.ForRawType(typeof(MsPowerShellConnector)));
             Assert.NotNull(f, "The Facade Creation fails");
             return f;
         }
 
         public ConnectorFacade CreateConnectorFacade(SafeType<Connector> clazz)
         {
-           // if (null == _facade)
-           // {
+            if (null == _facade)
+            {
                 PropertyBag propertyBag = TestHelpers.GetProperties(clazz.RawType);
 
                 APIConfiguration impl = TestHelpers.CreateTestConfiguration(clazz, propertyBag, "configuration");
@@ -585,7 +623,7 @@ namespace MSPowerShellConnectorTests
                 impl.ResultsHandlerConfiguration.EnableFilteredResultsHandler = false;
                 impl.ResultsHandlerConfiguration.EnableNormalizingResultsHandler = false;
                 _facade = ConnectorFacadeFactory.GetInstance().NewInstance(impl);
-            //}
+            }
             return _facade;
         }
 
@@ -615,7 +653,7 @@ namespace MSPowerShellConnectorTests
         private SecureString GetSecure(String password)
         {
             var secure = new SecureString();
-            foreach (char c in password )
+            foreach (char c in password)
             {
                 secure.AppendChar(c);
             }

@@ -22,6 +22,7 @@
  * "Portions Copyrighted [year] [name of copyright owner]"
  */
 using System;
+using System.Collections.Concurrent;
 using Org.IdentityConnectors.Common;
 using Org.IdentityConnectors.Framework.Common.Objects;
 using Org.IdentityConnectors.Framework.Spi;
@@ -37,23 +38,23 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         private Collection<String> _validScripts;
 
         [ConfigurationProperty(DisplayMessageKey = "display_AuthenticateScriptFileName", HelpMessageKey = "help_AuthenticateScriptFileName",
-            GroupMessageKey = "group_OperationScripts", Order = 1)]  
+            GroupMessageKey = "group_OperationScripts", Order = 1)]
         public String AuthenticateScriptFileName
         { get; set; }
 
         [ConfigurationProperty(DisplayMessageKey = "display_CreateScriptFileName", HelpMessageKey = "help_CreateScriptFileName",
-            GroupMessageKey = "group_OperationScripts", Order = 2)] 
+            GroupMessageKey = "group_OperationScripts", Order = 2)]
         public String CreateScriptFileName
         { get; set; }
 
 
         [ConfigurationProperty(DisplayMessageKey = "display_DeleteScriptFileName", HelpMessageKey = "help_DeleteScriptFileName",
-            GroupMessageKey = "group_OperationScripts", Order = 3)] 
+            GroupMessageKey = "group_OperationScripts", Order = 3)]
         public String DeleteScriptFileName
         { get; set; }
 
         [ConfigurationProperty(DisplayMessageKey = "display_ResolveUsernameScriptFileName", HelpMessageKey = "help_ResolveUsernameScriptFileName",
-            GroupMessageKey = "group_OperationScripts", Order = 4)] 
+            GroupMessageKey = "group_OperationScripts", Order = 4)]
         public String ResolveUsernameScriptFileName
         { get; set; }
 
@@ -63,22 +64,22 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         { get; set; }
 
         [ConfigurationProperty(DisplayMessageKey = "display_ScriptOnResourceScriptFileName", HelpMessageKey = "help_ScriptOnResourceScriptFileName",
-            GroupMessageKey = "group_OperationScripts", Order = 6)] 
+            GroupMessageKey = "group_OperationScripts", Order = 6)]
         public String ScriptOnResourceScriptFileName
         { get; set; }
 
         [ConfigurationProperty(DisplayMessageKey = "display_SearchScriptFileName", HelpMessageKey = "help_SearchScriptFileName",
-            GroupMessageKey = "group_OperationScripts", Order = 7)] 
+            GroupMessageKey = "group_OperationScripts", Order = 7)]
         public String SearchScriptFileName
         { get; set; }
 
         [ConfigurationProperty(DisplayMessageKey = "display_SyncScriptFileName", HelpMessageKey = "help_SyncScriptFileName",
-            GroupMessageKey = "group_OperationScripts", Order = 8)] 
+            GroupMessageKey = "group_OperationScripts", Order = 8)]
         public String SyncScriptFileName
         { get; set; }
 
         [ConfigurationProperty(DisplayMessageKey = "display_TestScriptFileName", HelpMessageKey = "help_TestScriptFileName",
-            GroupMessageKey = "group_OperationScripts", Order = 9)] 
+            GroupMessageKey = "group_OperationScripts", Order = 9)]
         public String TestScriptFileName
         { get; set; }
 
@@ -88,13 +89,13 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         { get; set; }
 
         [ConfigurationProperty(Required = true, DisplayMessageKey = "display_VariablesPrefix", HelpMessageKey = "help_VariablesPrefix",
-            GroupMessageKey = "group_PowerShell", Order = 12)] 
+            GroupMessageKey = "group_PowerShell", Order = 12)]
         public String VariablesPrefix
-        { get; set;  }
+        { get; set; }
 
         [ConfigurationProperty(Required = true, DisplayMessageKey = "display_QueryFilterType", HelpMessageKey = "help_QueryFilterType",
             GroupMessageKey = "group_PowerShell", Order = 16)]
-        public String QueryFilterType 
+        public String QueryFilterType
         { get; set; }
 
         [ConfigurationProperty(DisplayMessageKey = "display_SubstituteUidAndNameInQueryFilter", HelpMessageKey = "help_SubstituteUidAndNameInQueryFilter",
@@ -121,7 +122,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             SchemaScriptFileName = "";
             ScriptOnResourceScriptFileName = "";
             SearchScriptFileName = "";
-            SyncScriptFileName = "";            
+            SyncScriptFileName = "";
             TestScriptFileName = "";
             UpdateScriptFileName = "";
             VariablesPrefix = "Connector";
@@ -149,7 +150,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 
             _validScripts = new Collection<string>();
 
-            Trace.TraceInformation("Entering Validate() configuration"); 
+            Trace.TraceInformation("Entering Validate() configuration");
             foreach (var file in scriptsList)
             {
                 if (StringUtil.IsNotBlank(file))
@@ -176,7 +177,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                 throw new ConfigurationException("VariablesPrefix can not be empty or null");
             }
 
-            if (!("Map".Equals(QueryFilterType, StringComparison.InvariantCultureIgnoreCase) 
+            if (!("Map".Equals(QueryFilterType, StringComparison.InvariantCultureIgnoreCase)
                 || "Ldap".Equals(QueryFilterType, StringComparison.InvariantCultureIgnoreCase)
                 || "Native".Equals(QueryFilterType, StringComparison.InvariantCultureIgnoreCase)
                 || "AdPsModule".Equals(QueryFilterType, StringComparison.InvariantCultureIgnoreCase)))
@@ -205,6 +206,25 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             return _validScripts;
         }
 
+
+        private readonly ConcurrentDictionary<string, object> _propertyBag = new ConcurrentDictionary<string, object>();
+
+
+        /// <summary>
+        /// Returns the Dictionary shared between the Connector instances.
+        /// 
+        /// Shared map to store initialised resources which should be shared between
+        /// the scripts.
+        /// </summary>
+        /// <returns> single instance of shared ConcurrentMap. </returns>
+        public virtual ConcurrentDictionary<string, object> PropertyBag
+        {
+            get
+            {
+                return _propertyBag;
+            }
+        }
+
         private MsPowerShellHost _host = null;
 
         private MsPowerShellHost MsPowerShellHost
@@ -217,7 +237,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                     {
                         if (null == _host)
                         {
-                           _host = new MsPowerShellHost();
+                            _host = new MsPowerShellHost();
                         }
                     }
                 }

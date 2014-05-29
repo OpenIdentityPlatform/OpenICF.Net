@@ -1,4 +1,4 @@
-﻿/*
+/*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * Copyright (c) 2014 ForgeRock AS. All Rights Reserved
@@ -35,7 +35,6 @@ using Org.IdentityConnectors.Framework.Common.Exceptions;
 
 namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 {
-
     public enum OperationType
     {
         AUTHENTICATE,
@@ -50,6 +49,8 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         RUNSCRIPTONCONNECTOR,
         RUNSCRIPTONRESOURCE,
         UPDATE,
+
+
         //ADD_ATTRIBUTE_VALUES,
         //REMOVE_ATTRIBUTE_VALUES
     };
@@ -64,8 +65,8 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         protected static String Username = "Username";
         protected static String Password = "Password";
         protected static String Action = "Action";
-        protected static String OperationTypeName = "OperationType";
-        protected static String ObjectClass = "ObjectClass";
+        protected static String OperationName = "Operation";
+        protected static String ObjectClassName = "ObjectClass";
         protected static String Uid = "Uid";
         protected static String Id = "Id";
         protected static String Attributes = "Attributes";
@@ -120,21 +121,31 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             _attrSubstitute = new Hashtable();
             if (_configuration.SubstituteUidAndNameInQueryFilter)
             {
-                _attrSubstitute.Add("__UID__",_configuration.UidAttributeName);
+                _attrSubstitute.Add("__UID__", _configuration.UidAttributeName);
                 _attrSubstitute.Add("__NAME__", _configuration.NameAttributeName);
             }
 
             if ((_configuration.VariablesPrefix != null) && (!"".Equals(_configuration.VariablesPrefix)))
+            {
                 _scriptPrefix = _configuration.VariablesPrefix;
+            }
 
             if ("Map".Equals(_configuration.QueryFilterType))
+            {
                 _visitor = Visitors.Map;
+            }
             else if ("Ldap".Equals(_configuration.QueryFilterType))
+            {
                 _visitor = Visitors.Ldap;
+            }
             else if ("Native".Equals(_configuration.QueryFilterType))
+            {
                 _visitor = Visitors.NativeQuery;
+            }
             else if ("AdPsModule".Equals(_configuration.QueryFilterType))
+            {
                 _visitor = Visitors.AdPsModule;
+            }
         }
 
         #endregion
@@ -163,7 +174,9 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             catch (Exception e)
             {
                 if (e.InnerException != null)
+                {
                     throw e.InnerException;
+                }
                 throw;
             }
         }
@@ -178,8 +191,10 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         public Schema Schema()
         {
             Trace.TraceInformation("Invoke Schema");
-            if (_schema != null) 
+            if (_schema != null)
+            {
                 return _schema;
+            }
 
             try
             {
@@ -187,8 +202,10 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             }
             catch (Exception e)
             {
-                if (e.InnerException != null) 
+                if (e.InnerException != null)
+                {
                     throw e.InnerException;
+                }
                 throw;
             }
             if (null == _schema)
@@ -234,8 +251,10 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             }
             catch (Exception e)
             {
-                if (e.InnerException != null) 
+                if (e.InnerException != null)
+                {
                     throw e.InnerException;
+                }
                 throw;
             }
         }
@@ -279,8 +298,10 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             }
             catch (Exception e)
             {
-                if (e.InnerException != null) 
+                if (e.InnerException != null)
+                {
                     throw e.InnerException;
+                }
                 throw;
             }
         }
@@ -316,7 +337,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             ResultsHandler handler, OperationOptions options)
         {
             Trace.TraceInformation("Invoke ExecuteQuery ObjectClass:{0}", objectClass.GetObjectClassValue());
-            
+
             try
             {
                 ExecuteQuery(_configuration.SearchScriptFileName, objectClass, query, handler, options);
@@ -324,8 +345,10 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             }
             catch (Exception e)
             {
-                if (e.InnerException != null) 
+                if (e.InnerException != null)
+                {
                     throw e.InnerException;
+                }
                 throw;
             }
         }
@@ -342,7 +365,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                 switch (_visitor)
                 {
                     case Visitors.Map:
-                        arguments.Add(Query, query.Accept<Dictionary<String, Object>, Hashtable>(new MapFilterVisitor(),_attrSubstitute));
+                        arguments.Add(Query, query.Accept<Dictionary<String, Object>, Hashtable>(new MapFilterVisitor(), _attrSubstitute));
                         break;
                     case Visitors.AdPsModule:
                         arguments.Add(Query, query.Accept<String, Hashtable>(new AdPsModuleFilterVisitor(), _attrSubstitute));
@@ -370,14 +393,18 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             {
                 Uid uid = ExecuteCreate(_configuration.CreateScriptFileName, objectClass, createAttributes, options);
                 if (uid == null)
+                {
                     throw new ConnectorException("Create script didn't return with a valid uid (__UID__) string value");
+                }
                 Trace.TraceInformation("{0}:{1} created", objectClass.GetObjectClassValue(), uid.GetUidValue());
                 return uid;
             }
             catch (Exception e)
             {
-                if (e.InnerException != null) 
+                if (e.InnerException != null)
+                {
                     throw e.InnerException;
+                }
                 throw;
             }
         }
@@ -385,7 +412,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         protected Uid ExecuteCreate(String scriptName, ObjectClass objectClass, ICollection<ConnectorAttribute> createAttributes, OperationOptions options)
         {
             var result = new MsPowerShellUidHandler();
-            var arguments = new Dictionary<String, Object> {{Result, result}};
+            var arguments = new Dictionary<String, Object> { { Result, result } };
 
             if (ConnectorAttributeUtil.GetNameFromAttributes(createAttributes) != null)
                 arguments.Add(Id, ConnectorAttributeUtil.GetNameFromAttributes(createAttributes).GetNameValue());
@@ -399,7 +426,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         #region UpdateOp Members
         public Uid Update(ObjectClass objectClass, Uid uid, ICollection<ConnectorAttribute> valuesToReplace, OperationOptions options)
         {
-            Trace.TraceInformation("Invoke Update ObjectClass: {0}/Uid:{1}", objectClass.GetObjectClassValue(),uid.GetUidValue());
+            Trace.TraceInformation("Invoke Update ObjectClass: {0}/Uid:{1}", objectClass.GetObjectClassValue(), uid.GetUidValue());
             try
             {
                 Uid uidAfter = ExecuteUpdate(_configuration.UpdateScriptFileName, objectClass, uid, valuesToReplace, options);
@@ -410,8 +437,10 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             }
             catch (Exception e)
             {
-                if (e.InnerException != null) 
+                if (e.InnerException != null)
+                {
                     throw e.InnerException;
+                }
                 throw;
             }
 
@@ -420,7 +449,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         protected Uid ExecuteUpdate(String scriptName, ObjectClass objectClass, Uid uid,
             ICollection<ConnectorAttribute> updateAttributes, OperationOptions options)
         {
-            var result = new MsPowerShellUidHandler {Uid = uid};
+            var result = new MsPowerShellUidHandler { Uid = uid };
             var arguments = new Dictionary<String, Object>
             {
                 {Result, result},
@@ -441,13 +470,15 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 
             try
             {
-                ExecuteDelete(_configuration.DeleteScriptFileName,objectClass,uid,options);
+                ExecuteDelete(_configuration.DeleteScriptFileName, objectClass, uid, options);
                 Trace.TraceInformation("Delete ok");
             }
             catch (Exception e)
             {
-                if (e.InnerException != null) 
+                if (e.InnerException != null)
+                {
                     throw e.InnerException;
+                }
                 throw;
             }
         }
@@ -464,13 +495,16 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         {
             Trace.TraceInformation("Invoke GetLatestSyncToken ObjectClass:{0}", objectClass.GetObjectClassValue());
             SyncToken token = null;
-            
+
             try
             {
                 Object result = ExecuteGetLatestSyncToken(_configuration.SyncScriptFileName, objectClass);
-                if (result is SyncToken) {
+                if (result is SyncToken)
+                {
                     token = result as SyncToken;
-                } else if (null != result) {
+                }
+                else if (null != result)
+                {
                     token = new SyncToken(result);
                 }
                 Trace.TraceInformation("GetLatestSyncToken ok");
@@ -478,7 +512,9 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             catch (Exception e)
             {
                 if (e.InnerException != null)
+                {
                     throw e.InnerException;
+                }
                 throw;
             }
             return token;
@@ -509,8 +545,10 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             }
             catch (Exception e)
             {
-                if (e.InnerException != null) 
+                if (e.InnerException != null)
+                {
                     throw e.InnerException;
+                }
                 throw;
             }
         }
@@ -522,7 +560,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             {
                 {Result, new MsPowerShellSyncResults(objectClass, handler)}
             };
-            if (token != null) arguments.Add(Token, token.Value);
+            if (token != null) { arguments.Add(Token, token.Value); }
 
             ExecuteScriptFile(scriptName, CreateBinding(arguments, OperationType.SYNC, objectClass, null, null, options));
         }
@@ -536,14 +574,16 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 
             try
             {
-                var result =ExecuteScriptOnConnector(request, options);
+                var result = ExecuteScriptOnConnector(request, options);
                 Trace.TraceInformation("RunScriptOnConnector ok");
                 return result;
             }
             catch (Exception e)
             {
                 if (e.InnerException != null)
+                {
                     throw e.InnerException;
+                }
                 throw;
             }
         }
@@ -568,20 +608,29 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             var binding = new Dictionary<String, Object>();
 
             arguments.Add(Action, operationType);
-            arguments.Add(OperationTypeName, operationType);
+            arguments.Add(OperationName, operationType);
             arguments.Add(Configuration, _configuration);
-            
-            if (uid != null) 
+
+
+            if (uid != null)
+            {
                 arguments.Add(Uid, uid);
+            }
 
-            if (attributes != null) 
-                arguments.Add(Attributes,attributes);
+            if (attributes != null)
+            {
+                arguments.Add(Attributes, attributes);
+            }
 
-            if (objectClass != null) 
-                arguments.Add(ObjectClass, objectClass.GetObjectClassValue());
+            if (objectClass != null)
+            {
+                arguments.Add(ObjectClassName, objectClass);
+            }
 
             if (options != null)
+            {
                 arguments.Add(Options, options);
+            }
 
             binding.Add(_scriptPrefix, arguments);
             return binding;
