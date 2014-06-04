@@ -26,7 +26,8 @@
 
 <#  
 .SYNOPSIS  
-    This is a sample Delete script        
+    This is a sample Delete script
+    
 .DESCRIPTION
 	Parameters:
 	By default, the connector injects the "Connector" variable into the script.
@@ -34,8 +35,8 @@
 	This variable has the following properties:
 	- <prefix>.Configuration : Connector's configuration object
 	- <prefix>.Operation: an OperationType corresponding to the action ("DELETE" here)
-	- <prefix>.ObjectClass: a String describing the Object class (__ACCOUNT__ / __GROUP__ / other)
-	- <prefix>.Uid: String for the unique id (__UID__) that specifies the object to delete
+	- <prefix>.ObjectClass: an ObjectClass describing the Object class (__ACCOUNT__ / __GROUP__ / other)
+	- <prefix>.Uid: The Uid of the object to delete
 	- <prefix>.Options: a handler to the OperationOptions Map
 	
 .RETURNS
@@ -46,9 +47,11 @@
     Author         : Gael Allioux (gael.allioux@forgerock.com)
     Prerequisite   : PowerShell V2
     Copyright 2014 - ForgeRock AS    
+
 .LINK  
     Script posted over:  
     http://openicf.forgerock.org
+
 .EXAMPLE  
     Example 1     
 #>
@@ -56,20 +59,22 @@
 # Always put code in try/catch statement and make sure exceptions are rethrown to connector
 try
 {
-if ($Connector.Action -eq "DELETE")
+if ($Connector.Operation -eq "DELETE")
 {
-	if ($Connector.ObjectClass -eq "__ACCOUNT__")
+	switch ($Connector.ObjectClass.Type)
 	{
-		if ($Connector.Uid -eq "smith")
+		"__ACCOUNT__" 	
 		{
-		# we're good
-		} else
-		{
-			throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.UnknownUidException("User does not exist")
+			if ($Connector.Uid.GetUidValue() -ne "smith")
+			{
+				throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.UnknownUidException("User does not exist")
+			}
 		}
-	}
-	else {
-		throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")
+		"__GROUP__" 	{}
+		"__ALL__" 		{throw "ICF Framework must reject this"}
+		"__TEST__" 		{Exception-Test -Operation $Connector.Operation -ObjectClass $Connector.ObjectClass -Uid $Connector.Uid -Options $Connector.Options}
+		"__SAMPLE__" 	{throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")}
+		default 		{throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")}
 	}
 }
 }

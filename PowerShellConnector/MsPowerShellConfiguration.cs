@@ -113,6 +113,11 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         public String NameAttributeName
         { get; set; }
 
+        [ConfigurationProperty(DisplayMessageKey = "display_PsModulesToImport", HelpMessageKey = "help_PsModulesToImport",
+            GroupMessageKey = "group_PowerShell", Order = 17)]
+        public string[] PsModulesToImport
+        { get; set; }
+
         public MsPowerShellConfiguration()
         {
             AuthenticateScriptFileName = "";
@@ -130,6 +135,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             SubstituteUidAndNameInQueryFilter = false;
             UidAttributeName = Uid.NAME;
             NameAttributeName = Name.NAME;
+            PsModulesToImport = new string[]{};
         }
 
         public override void Validate()

@@ -26,15 +26,17 @@
 
 <#  
 .SYNOPSIS  
-    This is a sample Test script        
+    This is a sample Test script     
+	
 .DESCRIPTION
 	Parameters:
 	The connector sends us the following:
 	- <prefix>.Configuration : handler to the connector's configuration object
-	- <prefix>.Action: String correponding to the action ("DELETE" here)
+	- <prefix>.Operation: An OperationType String correponding to the action ("TEST" here)
 	
 .RETURNS 
 	Nothing.
+	Throw any exception to make the test fail.
 	
 .NOTES  
     File Name      : Test.ps1  
@@ -44,17 +46,13 @@
 .LINK  
     Script posted over:  
     http://openicf.forgerock.org
-.EXAMPLE  
-    Example 1     
-.EXAMPLE    
-    Example 2
+
 #>
 
 # Always put code in try/catch statement and make sure exceptions are rethrown to connector
 try
 {
- 
- if ($Connector.Action -eq "TEST")
+ if ($Connector.Operation -eq "TEST")
  {
  	return "TEST SUCCEEDED"
  }

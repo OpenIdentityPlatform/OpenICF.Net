@@ -26,7 +26,8 @@
 
 <#  
 .SYNOPSIS  
-    This is a sample Schema script        
+    This is a sample Schema script
+	
 .DESCRIPTION
 
 .INPUT VARIABLES
@@ -44,6 +45,7 @@
     Author         : Gael Allioux (gael.allioux@forgerock.com)
     Prerequisite   : PowerShell V2
     Copyright 2014 - ForgeRock AS    
+	
 .LINK  
     Script posted over:  
     http://openicf.forgerock.org

@@ -26,7 +26,8 @@
 
 <#  
 .SYNOPSIS  
-    This is a sample Authenticate script        
+    This is a sample Authenticate script
+	
 .DESCRIPTION
 
 .INPUT VARIABLES
@@ -46,7 +47,8 @@
     File Name      : Authenticate.ps1  
     Author         : Gael Allioux (gael.allioux@forgerock.com)
     Prerequisite   : PowerShell V2
-    Copyright 2014 - ForgeRock AS    
+    Copyright 2014 - ForgeRock AS   
+	
 .LINK  
     Script posted over:  
     http://openicf.forgerock.org

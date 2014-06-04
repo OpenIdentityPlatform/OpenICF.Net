@@ -39,10 +39,19 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 
         public MsPowerShellHost()
         {
-            _initial = InitialSessionState.CreateDefault();
-            // check if re-loading modules is more efficient
-            //_initial.ImportPSModule(new string[] { "C:\\Program Files\\Common Files\\Microsoft Lync Server 2010\\Modules\\Lync\\Lync.psd1" });
             _space = RunspaceFactory.CreateRunspace();
+            _space.Open();
+            _ps = PowerShell.Create();
+            _ps.Runspace = _space;
+        }
+
+        public MsPowerShellHost(string[] modules)
+        {
+            // check if re-loading modules is more efficient
+            //_initial.ImportPSModule(new string[] { "C:\\OpenICF\\fr-branches\\openicf-powershell-connector-1.4.0.x\\Samples\\Tests\\TestModule.psm1" });
+            _initial = InitialSessionState.CreateDefault();
+            _initial.ImportPSModule(modules);
+            _space = RunspaceFactory.CreateRunspace(_initial);
             _space.Open();
             _ps = PowerShell.Create();
             _ps.Runspace = _space;
@@ -73,11 +82,12 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             _ps.Commands.Clear(); 
             //ps.AddScript(loadScript(fileName),true);
             _ps.AddScript(script);
+            _ps.Streams.Debug.DataAdded += new EventHandler<DataAddedEventArgs>(Debug_DataAdded);
             try
             {
                 var psResult = _ps.Invoke();
                 //TODO: test this!!!
-                foreach (var debug in _ps.Streams.Debug)
+                foreach (var debug in _ps.Streams.Debug.ReadAll())
                 {
                     Trace.TraceInformation(debug.Message);
                 }
@@ -91,6 +101,11 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             {
                 _ps.Stop();
             }
+        }
+
+        void Debug_DataAdded(object sender, DataAddedEventArgs e)
+        {
+            Trace.TraceInformation("eeee");
         }
 
         public void Dispose() 

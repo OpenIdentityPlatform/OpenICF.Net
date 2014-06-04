@@ -26,7 +26,8 @@
 
 <#  
 .SYNOPSIS  
-    This is a sample ResolveUsername script        
+    This is a sample ResolveUsername script
+	
 .DESCRIPTION
 	Parameters:
 	The connector sends us the following:
@@ -34,22 +35,22 @@
 	- <prefix>.Options: a handler to the Operation Options
 	- <prefix>.Operation: an OperationType corresponding to the action ("RESOLVE_USERNAME" here)
 	- <prefix>.ObjectClass: an ObjectClass describing the Object class (__ACCOUNT__ / __GROUP__ / other)
-	- <prefix>.Username: Usename String
+	- <prefix>.Username: Username String
 
 .RETURNS 
 	Must return the user unique ID (__UID__).
 	To do so, set the <prefix>.Result.Uid property
 	
 .NOTES  
-    File Name      : Delete.ps1  
+    File Name      : ResolveUsername.ps1  
     Author         : Gael Allioux (gael.allioux@forgerock.com)
     Prerequisite   : PowerShell V2
-    Copyright 2014 - ForgeRock AS    
+    Copyright 2014 - ForgeRock AS   
+	
 .LINK  
     Script posted over:  
     http://openicf.forgerock.org
-.EXAMPLE  
-    Example 1     
+
 #>
 
 # Always put code in try/catch statement and make sure exceptions are rethrown to connector

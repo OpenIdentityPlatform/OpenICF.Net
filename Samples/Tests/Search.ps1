@@ -26,7 +26,8 @@
 
 <#  
 .SYNOPSIS  
-    This is a sample Search script        
+    This is a sample Search script    
+    
 .DESCRIPTION
 	The connector injects the following variables to the script:
 	 - <prefix>.Configuration : handler to the connector's configuration object
@@ -61,18 +62,18 @@
     Author         : Gael Allioux (gael.allioux@forgerock.com)
     Prerequisite   : PowerShell V2
     Copyright 2014 - ForgeRock AS    
+
 .LINK  
     Script posted over:  
     http://openicf.forgerock.org
-.EXAMPLE  
-    Example 1     
-.EXAMPLE    
-    Example 2
+
 #>
 
 # Always put code in try/catch statement and make sure exceptions are rethrown to connector
 try
 {
+#Set-ExecutionPolicy unrestricted
+#Import-Module "C:\OpenICF\fr-branches\openicf-powershell-connector-1.4.0.x\Samples\Tests\TestModule.psm1"
 if ( $Connector.Query )
 {
 	$fullQuery = $Connector.Query.Left + " " + $Connector.Query.Operation +" "+ $Connector.Query.Right
@@ -131,6 +132,7 @@ if ( $Connector.Query )
 				}
 			}
 		}
+		"__EMPTY__" {}
 		default
 		{	
 			throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")
@@ -153,9 +155,41 @@ else
 				}
 			}
 		}
+		"__TEST__"
+		{
+			$attrToGet = @{}
+			if($Connector.Options.AttributesToGet -ne $null)
+			{
+				foreach($a in $Connector.Options.AttributesToGet)
+				{
+					$attrToGet.Add($a,$true)
+				}
+			}
+			$template = Get-ConnectorObjectTemplate
+			foreach($i in (0..9))
+			{
+				$uid = "UID" + $i
+				$id = "TEST" + $i
+				$entry = @{__UID__= $uid; __NAME__= $id}
+				echo "ENTRY" $entry > "C:\PSScripts\dump.txt"
+				foreach($key in $template.Keys)
+				{
+					if($attrToGet.ContainsKey($key))
+					{
+						$entry.Add($key, $template[$key])
+					}
+				}
+				Write-Debug -Message "Processing $entry" 
+				if (!$Connector.Result.Process($entry))
+				{
+					break;
+				}
+			}
+		}
+		"__EMPTY__" {}
 		default 
 		{
-			throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")
+			throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type)")
 		}
 	}
 }

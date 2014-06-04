@@ -26,7 +26,8 @@
 
 <#  
 .SYNOPSIS  
-    This is a sample Sync script        
+    This is a sample Sync script      
+	
 .DESCRIPTION
 	By default, the connector injects the "Connector" variable into the script.
 	This prefix can be modified in configuration if needed.
@@ -41,14 +42,15 @@
 	
 	if action = "SYNC":
     Call Connector.Results.Process(Hashtable) describing one update:
-    Map should look like the following:
+    Hashtable should look like the following:
 
-   [
-   "SyncToken": <Object> token of the object that changed(could be Integer, Date, String) , [!! could be null]
-   "DeltaType":<String> ("CREATE|UPDATE|CREATE_OR_UPDATE"|"DELETE"), the type of change that occurred
-   "PreviousUid":<String>, the Uid of the object before the change (This is for rename ops)
-   "Object": <Hashtable> The object that has changed
-   ]
+   {
+   "SyncToken" = <Object> token of the object that changed(could be Integer, Date, String) [!! could be null]
+   "DeltaType" = <String> ("CREATE|UPDATE|CREATE_OR_UPDATE"|"DELETE"), the type of change that occurred
+   "PreviousUid" = <String>, the Uid of the object before the change (This is for rename ops)
+   "Uid"
+   "Object" =  <Hashtable> The object that has changed
+   }
   
 .NOTES  
     File Name      : Sync.ps1  

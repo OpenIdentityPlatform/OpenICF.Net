@@ -116,8 +116,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             Trace.TraceInformation("PowerShell Connector Init method");
             _configuration = (MsPowerShellConfiguration)configuration;
             _configuration.Validate();
-            _psHost = new MsPowerShellHost();
-
+            _psHost = _configuration.PsModulesToImport.Length > 0 ? new MsPowerShellHost(_configuration.PsModulesToImport) : new MsPowerShellHost();
             _attrSubstitute = new Hashtable();
             if (_configuration.SubstituteUidAndNameInQueryFilter)
             {

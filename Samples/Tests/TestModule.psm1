@@ -25,8 +25,8 @@
 #REQUIRES -Version 2.0
 	
 	
-function Exception-Test {
-param(
+Function Exception-Test {
+Param(
 	$operation, 
 	$objectClass,
 	$uid,
@@ -36,19 +36,22 @@ param(
 	$sstring = ConvertTo-SecureString -AsPlainText  -String "Passw0rd" -Force
 	$password = New-Object Org.IdentityConnectors.Common.Security.GuardedString($sstring)
 	
-	if ($options.RunAsUser -ne $null){
-		if ($options.RunWithPassword -eq $null) {
-			throw New-Object System.ArgumentException("Missing Run As Password")
-		} elseif ($options.RunAsUser -eq "valid-session" -and $options.RunWithPassword -eq $null){
-			#Use valid session ID
-		} elseif ($options.RunAsUser -ne "admin" -or  -not ! $password.Equals($options.RunWithPassword)){
-			throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.ConnectorSecurityException("Invalid Run As Credentials");
+	if ($options -ne $null)
+	{
+		if ($options.RunAsUser -ne $null){
+			if ($options.RunWithPassword -eq $null) {
+				throw New-Object System.ArgumentException("Missing Run As Password")
+			} elseif ($options.RunAsUser -eq "valid-session" -and $options.RunWithPassword -eq $null){
+				#Use valid session ID
+			} elseif ($options.RunAsUser -ne "admin" -or ! $password.Equals($options.RunWithPassword)){
+				throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.ConnectorSecurityException("Invalid Run As Credentials");
+			}
 		}
 	}
 	
 	if ("TEST1" -eq $uid.GetUidValue()) {
 		if ("CREATE" -eq $operation) {
-			throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.AlreadyExistsException
+			throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.AlreadyExistsException("Object already exist")
 			#throw new AlreadyExistsException(
 			#   	 "Object with Uid '${uid.uidValue}' and ObjectClass '${objectClass.objectClassValue}' already exists!").initUid(uid);
 		} else {
@@ -56,34 +59,34 @@ param(
 			# throw new UnknownUidException(uid, objectClass);
 		}
 	} elseif ("TEST2" -eq $uid.GetUidValue()) {
-		//ICF 1.4 Exception
+		#ICF 1.4 Exception
 		if ("DELETE" -eq $operation) {
 			return $uid;
 		} else {
 			throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException
 		}
 	} elseif ("TEST3" -eq $uid.GetUidValue()) {
-		//ICF 1.1 Exception
+		#ICF 1.1 Exception
 		if ("DELETE" -eq $operation) {
 			return $uid;
 		} else {
 			throw New-Object System.ArgumentException
 		}
 	} elseif ("TEST4" -eq $uid.GetUidValue()) {
-		if (CREATE -eq $operation) {
-			throw [Org.IdentityConnectors.Framework.Common.Exceptions.RetryableException]::Wrap("Created but some attributes are not set")
+		if ("CREATE" -eq $operation) {
+			throw [Org.IdentityConnectors.Framework.Common.Exceptions.RetryableException]::Wrap("Created but some attributes are not set", $uid)
 			#throw RetryableException.wrap("Created but some attributes are not set, call update with new 'uid'!", uid);
 		} else {
 			throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.PreconditionFailedException
 		}
 	} elseif ("TEST5" -eq $uid.GetUidValue()) {
-			if (CREATE -eq $operation) {
-				return uid;
+			if ("CREATE" -eq $operation) {
+				return $uid;
 			} else {
 				throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.PreconditionRequiredException
 			}
 	} elseif ("TIMEOUT" -eq $uid.GetUidValue()) {
-			Start-Sleep 30
+			Start-Sleep 30 
 	} elseif ("TESTEX_CE" -eq $uid.GetUidValue()) {
 		throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.ConfigurationException(New-Object System.ArgumentException("Test Failed"));
 	} elseif ("TESTEX_CB" -eq $uid.GetUidValue()) {
@@ -97,13 +100,13 @@ param(
 	} elseif ("TESTEX_OT" -eq $uid.GetUidValue()) {
 		throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.OperationTimeoutException("Example Message");
 	} elseif ("TESTEX_NPE" -eq $uid.GetUidValue()) {
-		throw new NullPointerException("Example Message");
+		throw New-Object NullPointerException("Example Message");
 	}
-	return uid;
+	return $uid;
 }
 
 
-Get-ConnectorObjectTemplate{
+Function Get-ConnectorObjectTemplate {
 
 #[int]	32-bit signed integer
 #[long]	64-bit signed integer
@@ -157,28 +160,31 @@ Get-ConnectorObjectTemplate{
 	$bigInt10 = New-Object Org.IdentityConnectors.Framework.Common.Objects.BigInteger("10")
 	
 	$value["attributeBigInteger"] = $bigInt1
-	$value["attributeBigIntegerMultivalue"] = ($bigInt0, $bigInt10) -as [Org.IdentityConnectors.Framework.Common.Objects.BigInteger][]
+	$value["attributeBigIntegerMultivalue"] = ($bigInt0, $bigInt10) -as [Org.IdentityConnectors.Framework.Common.Objects.BigInteger[]]
 	
 	$bigDec1 = New-Object Org.IdentityConnectors.Framework.Common.Objects.BigDecimal($bigInt1,0)
 	$bigDec0 = New-Object Org.IdentityConnectors.Framework.Common.Objects.BigDecimal($bigInt0,0)
 	$bigDec10 = New-Object Org.IdentityConnectors.Framework.Common.Objects.BigDecimal($bigInt10,0)
 	
 	$value["attributeBigDecimal"] = $bigDec1 -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal]
-	$value["attributeBigDecimalMultivalue"] = (($bigDec0 -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal]), ($bigDec0 -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal])) -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal][]
+	$value["attributeBigDecimalMultivalue"] = (($bigDec0 -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal]), ($bigDec0 -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal])) -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal[]]
 	
-	$gba = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray([System.Text.Encoding]::UTF8.GetBytes("array"))
-	$gba1 = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray([System.Text.Encoding]::UTF8.GetBytes("item1"))
-	$gba2 = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray([System.Text.Encoding]::UTF8.GetBytes("item2"))
+	#$gba = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray
+	#[System.Text.Encoding]::UTF8.GetBytes("array") | ForEach-Object($gba.AppendByte($_))
+	#$gba1 = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray
+	#[System.Text.Encoding]::UTF8.GetBytes("item1") | ForEach-Object($gba.AppendByte($_))
+	#$gba2 = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray
+	#[System.Text.Encoding]::UTF8.GetBytes("item1") | ForEach-Object($gba.AppendByte($_))
 	
-	$value["attributeGuardedByteArray"] = $gba
-	$value["attributeGuardedByteArrayMultivalue"] = ($gba1, $gba2) -as [Org.IdentityConnectors.Common.Security.GuardedByteArray][]
+	#$value["attributeGuardedByteArray"] = $gba
+	#$value["attributeGuardedByteArrayMultivalue"] = ($gba1, $gba2) -as [Org.IdentityConnectors.Common.Security.GuardedByteArray[]]
 	
-	$value["attributeGuardedString"] = New-Object Org.IdentityConnectors.Common.Security.GuardedString("secret".ToCharArray())
+	#$value["attributeGuardedString"] = New-Object Org.IdentityConnectors.Common.Security.GuardedString("secret".ToCharArray())
 	
-	$gs1 = New-Object Org.IdentityConnectors.Common.Security.GuardedString("secret1".ToCharArray())
-	$gs2 = New-Object Org.IdentityConnectors.Common.Security.GuardedString("secret2".ToCharArray())
+	#$gs1 = New-Object Org.IdentityConnectors.Common.Security.GuardedString("secret1".ToCharArray())
+	#$gs2 = New-Object Org.IdentityConnectors.Common.Security.GuardedString("secret2".ToCharArray())
 	
-	$value["attributeGuardedStringMultivalue"] = ($gs1, $gs2) -as [Org.IdentityConnectors.Common.Security.GuardedString][]
+	#$value["attributeGuardedStringMultivalue"] = ($gs1, $gs2) -as [Org.IdentityConnectors.Common.Security.GuardedString[]]
 	
 	$value["attributeMap"] = @{"string" = "String";
 								"number" = 42;
@@ -203,7 +209,7 @@ Get-ConnectorObjectTemplate{
 								"object" = @{"key1" = "value1"; "key2" = "value2"}
 								}) -as [hashtable[]]
 	
-	$value
+	return $value
 }
 	
-export-modulemember -function Test-Message, Get-ConnectorObjectTemplate
+export-modulemember -function Exception-Test, Get-ConnectorObjectTemplate

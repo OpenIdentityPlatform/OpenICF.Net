@@ -26,7 +26,8 @@
 
 <#  
 .SYNOPSIS  
-    This is a sample Create script        
+    This is a sample Create script
+	
 .DESCRIPTION
 
 .INPUT VARIABLES
@@ -48,6 +49,7 @@
     Author         : Gael Allioux (gael.allioux@forgerock.com)
     Prerequisite   : PowerShell V2
     Copyright 2014 - ForgeRock AS    
+
 .LINK  
     Script posted over:  
     http://openicf.forgerock.org
@@ -58,56 +60,19 @@ try
 {
 if ($Connector.Operation -eq "CREATE")
 {
-	if ($Connector.ObjectClass.Is("__ACCOUNT__"))
+	switch ($Connector.ObjectClass.Type)
 	{
-		$Connector.Result.Uid = "123"
-	}
-	elseif ($Connector.ObjectClass.Is("__GROUP__"))
-	{
-		throw "Unsupported operation"
-	}
-	elseif ($Connector.ObjectClass.Is("__ALL__"))
-	{
-		Write-Error "ICF Framework MUST REJECT this";
-	}
-	elseif ($Connector.ObjectClass.Is("__TEST__"))
-	{
-	switch ($Connector.Id)
-			{
-				"TEST1" {throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.AlreadyExistsException}
-				"TEST2" {throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException}
-				"TEST3" {throw New-Object System.ArgumentException}
-				"TEST4" 
-				{
-					$cause = New-Object Org.IdentityConnectors.Framework.Common.Exceptions.OperationTimeoutException
-					throw  [Org.IdentityConnectors.Framework.Common.Exceptions.RetryableException]::Wrap("TIMEOUT",$cause)
-				}
-				"TEST5" 
-				{
-					$attrutil = [Org.IdentityConnectors.Framework.Common.Objects.ConnectorAttributeUtil]
-					$secutil = [Org.IdentityConnectors.Common.Security.SecurityUtil]
-					
-					$mail = $attrutil::GetAsStringValue($attrutil::Find("mail",$Connector.Attributes))
-					if ($mail -ne "TEST5@example.com") {throw "Wrong email"}
-					
-					$gstring = $attrutil::GetPasswordValue($Connector.Attributes)
-					$password = $secutil::Decrypt($gstring)
-					echo "Gstring: " $gstring > "C:\PSScripts\dump.txt"
-					echo "Password: " $password >> "C:\PSScripts\dump.txt"
-					if ( $password -ne "Passw0rd") {throw "Wrong Password"}
-					
-					$Connector.Result.Uid = $Connector.Id
-				}
-				"TEST6"
-				{
-					$Connector.Result.Uid = New-Object Org.IdentityConnectors.Framework.Common.Objects.Uid("TEST6", "1")
-				}
-				default {throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.UnknownUidException}
-			}
-	} else 
-	{
-		throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")
-	}
+		"__ACCOUNT__" 	{}
+		"__GROUP__" 	{}
+		"__ALL__" 		{throw "ICF Framework must reject this"}
+		"__TEST__" 		
+		{
+			$uid = New-Object Org.IdentityConnectors.Framework.Common.Objects.Uid($Connector.Id, "0")
+			$Connector.Result.Uid = Exception-Test -Operation $Connector.Operation -ObjectClass $Connector.ObjectClass -Uid $uid -Options $Connector.Options
+		}
+		"__SAMPLE__" 	{throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")}
+		default 		{throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")}			
+	} 
 }
 }
 catch #Rethrow the original exception

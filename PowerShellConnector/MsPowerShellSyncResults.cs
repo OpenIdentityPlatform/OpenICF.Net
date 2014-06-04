@@ -39,6 +39,11 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             _handler = handler;
         }
 
+        /// <summary>
+        /// Complete() should be called when a token needs to be passed as a watermark,
+        /// without any special object to sync.
+        /// </summary>
+        /// <param name="newToken"></param>
         public void Complete(Object newToken)
         {
             if (newToken is SyncToken)
@@ -47,26 +52,33 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                 ((SyncTokenResultsHandler)_handler).HandleResult(new SyncToken(newToken));
         }
 
-        //public void Complete(SyncToken newToken)
-        //{
-        //    ((SyncTokenResultsHandler)_handler).HandleResult(newToken);
-        //}
-
+        /// <summary>
+        /// Process/handle the SyncDelta result
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
         public Boolean Process(SyncDelta result)
         {
             return _handler.Handle(result);
         }
 
+        /// <summary>
+        /// Process the Hashtable result and convert it to a SyncDelta object
+        /// ready to be processed by the sync handler 
+        /// </summary>
+        /// <remarks>
+        /// The result Hashtable must follow a specific format and contain the following key/value:
+        /// 
+        /// "Token": (Object) token object (could be Integer, Date, String), [!! could be null]
+        /// "Operation": (String) ("CREATE|UPDATE|CREATE_OR_UPDATE"|"DELETE"),
+        /// "Uid": (String) uid  (uid of the entry),
+        /// "PreviousUid": (String) previous uid (This is for rename ops),
+        /// "Object": Hashtable(String,List) of attributes name/values describing the object
+        /// </remarks>
+        /// <param name="result"></param>
+        /// <returns></returns>
         public Boolean Process(Hashtable result)
         {
-            // result must contain the following:
-            // "Token": <Object> token object (could be Integer, Date, String) , [!! could be null]
-            // "Operation":<String> ("CREATE|UPDATE|CREATE_OR_UPDATE"|"DELETE") ,
-            // "Uid":<String> uid  (uid of the entry) ,
-            // Id: <String> __NAME__
-            // "PreviousUid":<String> prevuid (This is for rename ops) ,
-            // "password":<String> password (optional... allows to pass clear text password if needed),
-            // "Attributes":Hashtable<String,List> of attributes name/values
             var syncbld = new SyncDeltaBuilder();
             var cobld = new ConnectorObjectBuilder();
             Uid uid;

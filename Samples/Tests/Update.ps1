@@ -55,7 +55,6 @@
 # Always put code in try/catch statement and make sure exceptions are rethrown to connector
 try
 {
-
 if ($Connector.Operation -eq "UPDATE")
 {
 	switch ($Connector.ObjectClass.Type)
@@ -63,37 +62,9 @@ if ($Connector.Operation -eq "UPDATE")
 		"__ACCOUNT__" {$Connector.Result.Uid = "123"}
 		"__GROUP__" {throw "Unsupported operation"}
 		"__ALL__" {Write-Error "ICF Framework MUST REJECT this"; break}
-		"__TEST__" {
-			switch ($Connector.Uid.GetUidValue())
-			{
-				"TEST1" {throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.ConnectorException}
-				"TEST2" {throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException}
-				"TEST3" {throw New-Object System.ArgumentException}
-				"TEST4" 
-				{
-					$cause = New-Object Org.IdentityConnectors.Framework.Common.Exceptions.OperationTimeoutException
-					throw  [Org.IdentityConnectors.Framework.Common.Exceptions.RetryableException]::Wrap("TIMEOUT",$cause)
-				}
-				"TEST5" 
-				{
-					$attrutil = [Org.IdentityConnectors.Framework.Common.Objects.ConnectorAttributeUtil]
-					$secutil = [Org.IdentityConnectors.Common.Security.SecurityUtil]
-					
-					$mail = $attrutil::GetAsStringValue($attrutil::Find("mail",$Connector.Attributes))
-					if ($mail -ne "TEST5@example2.com") {throw "Wrong email"}
-					
-					$gstring = $attrutil::GetPasswordValue($Connector.Attributes)
-					$password = $secutil::Decrypt($gstring)
-					if ( $password -ne "Passw0rd2") {throw "Wrong Password"}
-					
-					$Connector.Result.Uid = "TEST5"
-				}
-				"TEST6"
-				{
-					$Connector.Result.Uid = New-Object Org.IdentityConnectors.Framework.Common.Objects.Uid("TEST6")
-				}
-				default {throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.UnknownUidException}
-			}
+		"__TEST__" 
+		{
+			$Connector.Result.Uid = Exception-Test -Operation $Connector.Operation -ObjectClass $Connector.ObjectClass -Uid $Connector.Uid -Options $Connector.Options
 		}
 		default 
 		{
