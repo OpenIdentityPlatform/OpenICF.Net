@@ -64,11 +64,6 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         public String SchemaScriptFileName
         { get; set; }
 
-        [ConfigurationProperty(DisplayMessageKey = "display_ScriptOnResourceScriptFileName", HelpMessageKey = "help_ScriptOnResourceScriptFileName",
-            GroupMessageKey = "group_OperationScripts", Order = 6)]
-        public String ScriptOnResourceScriptFileName
-        { get; set; }
-
         [ConfigurationProperty(DisplayMessageKey = "display_SearchScriptFileName", HelpMessageKey = "help_SearchScriptFileName",
             GroupMessageKey = "group_OperationScripts", Order = 7)]
         public String SearchScriptFileName
@@ -140,7 +135,6 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         { get; set; }
 
 
-
         public MsPowerShellConfiguration()
         {
             AuthenticateScriptFileName = "";
@@ -148,7 +142,6 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             DeleteScriptFileName = "";
             ResolveUsernameScriptFileName = "";
             SchemaScriptFileName = "";
-            ScriptOnResourceScriptFileName = "";
             SearchScriptFileName = "";
             SyncScriptFileName = "";
             TestScriptFileName = "";
@@ -174,7 +167,6 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                 DeleteScriptFileName,                
                 ResolveUsernameScriptFileName, 
                 SchemaScriptFileName,
-                ScriptOnResourceScriptFileName, 
                 SearchScriptFileName, 
                 SyncScriptFileName,
                 TestScriptFileName,

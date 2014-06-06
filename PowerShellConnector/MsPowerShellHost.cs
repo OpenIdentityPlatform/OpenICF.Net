@@ -82,6 +82,14 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             {
                 _ps.Streams.ClearStreams();
                 var psResult = _ps.Invoke();
+
+                if ((psResult != null) && (psResult.Count > 0))
+                {
+                    foreach (var psobj in psResult)
+                    {
+                        result.Add(psobj.BaseObject);
+                    }
+                }
                 return result;
             }
             finally

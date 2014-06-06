@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Management.Automation;
 using System.Security;
@@ -412,19 +413,22 @@ namespace MSPowerShellConnectorTests
         // ScriptOnConnector Operation Test
         // =======================================================================
 
-        //[Test]
-        //[Category("ScriptOnConnector")]
-        //public void TestScriptOnConnector()
-        //{
-        //    var builder = new ScriptContextBuilder();
-        //    builder.ScriptLanguage = "PowerShell";
-        //    builder.ScriptText = "Write-Debug \"Test\"; return $Connector.Arguments['uid']";
-        //    //builder.ScriptText = "Write-Debug \"Test\"";
-        //    var uid = new Uid("foo", "12345");
-        //    builder.AddScriptArgument("uid", uid);
-        //    builder.AddScriptArgument("foo", "FOO");
-        //    Assert.AreEqual(GetFacade().RunScriptOnConnector(builder.Build(), null), uid);
-        //}
+        [Test]
+        [Category("ScriptOnConnector")]
+        public void TestScriptOnConnector()
+        {
+            var builder = new ScriptContextBuilder();
+            builder.ScriptLanguage = "POWERShell";
+            builder.ScriptText = "Write-Warning \"Test\"; return $Connector.Arguments.uid.GetUidValue()";
+            var uid = new Uid("foo", "12345");
+            builder.AddScriptArgument("uid", uid);
+            var res = GetFacade().RunScriptOnConnector(builder.Build(), null) as Collection<object>;
+            if (res != null)
+            {
+                Assert.AreEqual(res[0], uid.GetUidValue());    
+            }
+            
+        }
 
         // =======================================================================
         // ScriptOnResource Operation Test

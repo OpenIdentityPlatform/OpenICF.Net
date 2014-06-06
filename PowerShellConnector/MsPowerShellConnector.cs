@@ -60,7 +60,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                      MessageCatalogPaths = new[] { "Org.ForgeRock.OpenICF.Connectors.MsPowerShell.Messages" }
                      )]
     public class MsPowerShellConnector : PoolableConnector, TestOp, SearchOp<Filter>,
-         CreateOp, UpdateOp, DeleteOp, SyncOp, AuthenticateOp, ResolveUsernameOp, SchemaOp, ScriptOnConnectorOp
+         CreateOp, UpdateOp, DeleteOp, SyncOp, AuthenticateOp, ResolveUsernameOp, SchemaOp, ScriptOnConnectorOp, ScriptOnResourceOp
     {
         protected static String Username = "Username";
         protected static String Password = "Password";
@@ -570,6 +570,10 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         public object RunScriptOnConnector(ScriptContext request, OperationOptions options)
         {
             Trace.TraceInformation("Invoke RunScriptOnConnector");
+            if (!"PowerShell".Equals(request.ScriptLanguage,StringComparison.CurrentCultureIgnoreCase))
+            {
+                throw new ArgumentException("Script language must be PowerShell");
+            }
 
             try
             {
@@ -589,13 +593,50 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 
         protected Object ExecuteScriptOnConnector(ScriptContext request, OperationOptions options)
         {
+            var reqArguments = new Dictionary<String, Object>();
+            foreach (var entry in request.ScriptArguments)
+            {
+                reqArguments.Add(entry.Key,entry.Value);
+            }
+
             var arguments = new Dictionary<String, Object>
             {
-                {ScriptArguments, request.ScriptArguments}
+                {ScriptArguments, reqArguments}
             };
 
             return ExecuteScript(request.ScriptText, CreateBinding(arguments, OperationType.RUNSCRIPTONCONNECTOR, null, null, null, options));
         }
+        #endregion
+
+        #region ScriptOnResourceOp members
+
+        public object RunScriptOnResource(ScriptContext request, OperationOptions options)
+        {
+            Trace.TraceInformation("Invoke RunScriptOnResource");
+
+            try
+            {
+                var result = ExecuteScriptOnResource(request, options);
+                Trace.TraceInformation("RunScriptOnResource ok");
+                return result;
+            }
+            catch (Exception e)
+            {
+                if (e.InnerException != null)
+                {
+                    throw e.InnerException;
+                }
+                throw;
+            }
+        }
+
+        protected Object ExecuteScriptOnResource(ScriptContext request, OperationOptions options)
+        {
+            return 0;
+        }
+
+
+
         #endregion
 
         #region protected members
