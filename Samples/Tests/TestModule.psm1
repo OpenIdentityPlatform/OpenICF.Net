@@ -55,7 +55,7 @@ Param(
 			#throw new AlreadyExistsException(
 			#   	 "Object with Uid '${uid.uidValue}' and ObjectClass '${objectClass.objectClassValue}' already exists!").initUid(uid);
 		} else {
-			throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.UnknownUidException
+			throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.UnknownUidException($uid, $objectClass)
 			# throw new UnknownUidException(uid, objectClass);
 		}
 	} elseif ("TEST2" -eq $uid.GetUidValue()) {

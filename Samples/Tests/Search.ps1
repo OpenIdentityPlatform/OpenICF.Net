@@ -81,7 +81,7 @@ if ( $Connector.Query )
 	if ( $Connector.Query.Not )
 	{
 		$fullQuery = "!(" + $fullQuery +")"
-		echo "QUERY" $fullQuery > "C:\PSScripts\dump.txt"
+		#echo "QUERY" $fullQuery > "C:\PSScripts\dump.txt"
 	}
 	
 	switch ($Connector.ObjectClass.Type)
@@ -168,10 +168,10 @@ else
 			$template = Get-ConnectorObjectTemplate
 			foreach($i in (0..9))
 			{
-				$uid = "UID" + $i
-				$id = "TEST" + $i
+				"uid{0:d2}" -f 100
+				$uid = "UID{0:d2}" -f $i
+				$id = "TEST{0:d2}" -f $i
 				$entry = @{__UID__= $uid; __NAME__= $id}
-				echo "ENTRY" $entry > "C:\PSScripts\dump.txt"
 				foreach($key in $template.Keys)
 				{
 					if($attrToGet.ContainsKey($key))

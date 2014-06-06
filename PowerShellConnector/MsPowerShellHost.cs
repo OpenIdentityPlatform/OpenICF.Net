@@ -35,26 +35,21 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
     {
         private readonly PowerShell _ps;
         private readonly Runspace _space;
-        private InitialSessionState _initial;
 
         public MsPowerShellHost()
         {
             _space = RunspaceFactory.CreateRunspace();
-            _space.Open();
             _ps = PowerShell.Create();
-            _ps.Runspace = _space;
+            Init();
         }
 
         public MsPowerShellHost(string[] modules)
         {
-            // check if re-loading modules is more efficient
-            //_initial.ImportPSModule(new string[] { "C:\\OpenICF\\fr-branches\\openicf-powershell-connector-1.4.0.x\\Samples\\Tests\\TestModule.psm1" });
-            _initial = InitialSessionState.CreateDefault();
-            _initial.ImportPSModule(modules);
-            _space = RunspaceFactory.CreateRunspace(_initial);
-            _space.Open();
+            InitialSessionState initial = InitialSessionState.CreateDefault();
+            initial.ImportPSModule(modules);
+            _space = RunspaceFactory.CreateRunspace(initial);
             _ps = PowerShell.Create();
-            _ps.Runspace = _space;
+            Init();
         }
 
         public void ValidateScript(String script)
@@ -78,23 +73,15 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                     _space.SessionStateProxy.SetVariable(entry.Key, new PSObject(entry.Value));
                 }
             }
-            //TODO: check this
+
             _ps.Commands.Clear(); 
             //ps.AddScript(loadScript(fileName),true);
             _ps.AddScript(script);
-            _ps.Streams.Debug.DataAdded += new EventHandler<DataAddedEventArgs>(Debug_DataAdded);
+            
             try
             {
+                _ps.Streams.ClearStreams();
                 var psResult = _ps.Invoke();
-                //TODO: test this!!!
-                foreach (var debug in _ps.Streams.Debug.ReadAll())
-                {
-                    Trace.TraceInformation(debug.Message);
-                }
-                foreach (var res in psResult)
-                {
-                    result.Add(res.BaseObject);
-                }
                 return result;
             }
             finally
@@ -103,9 +90,27 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             }
         }
 
-        void Debug_DataAdded(object sender, DataAddedEventArgs e)
+
+        private void Init()
         {
-            Trace.TraceInformation("eeee");
+            _space.Open();
+            _ps.Runspace = _space;
+            _ps.Streams.Verbose.DataAdded += new EventHandler<DataAddedEventArgs>(SendVerbose);
+            _ps.Streams.Warning.DataAdded += new EventHandler<DataAddedEventArgs>(SendWarning);
+        }
+
+        void SendWarning( object sender, DataAddedEventArgs e)
+        {
+            if (sender == null) return;
+            var rec = sender as PSDataCollection<WarningRecord>;
+            Trace.TraceWarning("POWERSHELL: {0}", rec[e.Index]);
+        }
+
+        void SendVerbose(object sender, DataAddedEventArgs e)
+        {
+            if (sender == null) return;
+            var rec = sender as PSDataCollection<VerboseRecord>;
+            Trace.TraceInformation("POWERSHELL: {0}", rec[e.Index]);
         }
 
         public void Dispose() 

@@ -54,15 +54,15 @@ try
 {
  if ($Connector.Operation -eq "TEST")
  {
- 	return "TEST SUCCEEDED"
- }
+	Write-Verbose -verbose "TEST SUCCESS"
+}
  else
  {
  	$ex = New-Object Org.IdentityConnectors.Framework.Common.Exceptions.ConnectionFailedException
  	throw $ex
  }
 }
-catch #Rethrow the original exception
+catch #Re-throw the original exception
 {
 	throw
 }

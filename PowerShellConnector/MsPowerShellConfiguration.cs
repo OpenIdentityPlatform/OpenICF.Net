@@ -24,15 +24,16 @@
 using System;
 using System.Collections.Concurrent;
 using Org.IdentityConnectors.Common;
-using Org.IdentityConnectors.Framework.Common.Objects;
-using Org.IdentityConnectors.Framework.Spi;
+using Org.IdentityConnectors.Common.Security;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Org.IdentityConnectors.Framework.Common.Exceptions;
+using Org.IdentityConnectors.Framework.Common.Objects;
+using Org.IdentityConnectors.Framework.Spi;
 
 namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 {
-    [ConfigurationClassAttribute(true, new[] { "MsPowerShellHost" })]
+    [ConfigurationClass(true, new[] { "MsPowerShellHost" })]
     public class MsPowerShellConfiguration : AbstractConfiguration, StatefulConfiguration
     {
         private Collection<String> _validScripts;
@@ -118,6 +119,28 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         public string[] PsModulesToImport
         { get; set; }
 
+        [ConfigurationProperty(DisplayMessageKey = "display_Host", HelpMessageKey = "help_Host",
+            GroupMessageKey = "group_PowerShell", Order = 18)]
+        public String Host
+        { get; set; }
+
+        [ConfigurationProperty(DisplayMessageKey = "display_Port", HelpMessageKey = "help_Port",
+            GroupMessageKey = "group_Port", Order = 19)]
+        public String Port
+        { get; set; }
+
+        [ConfigurationProperty(DisplayMessageKey = "display_Login", HelpMessageKey = "help_Login",
+            GroupMessageKey = "group_PowerShell", Order = 20)]
+        public String Login
+        { get; set; }
+
+        [ConfigurationProperty(DisplayMessageKey = "display_Password", HelpMessageKey = "help_Password",
+            GroupMessageKey = "group_PowerShell", Order = 14)]
+        public GuardedString Password
+        { get; set; }
+
+
+
         public MsPowerShellConfiguration()
         {
             AuthenticateScriptFileName = "";
@@ -136,6 +159,10 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             UidAttributeName = Uid.NAME;
             NameAttributeName = Name.NAME;
             PsModulesToImport = new string[]{};
+            Host = "";
+            Port = null;
+            Login = "";
+            Password = null;
         }
 
         public override void Validate()
