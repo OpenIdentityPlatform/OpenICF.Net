@@ -25,6 +25,22 @@ namespace MsPowerShellTestModule
         }
     }
 
+    [Cmdlet(VerbsCommon.Get, "ConnectorObjectCache")]
+    public class GetConnectorObject : PSCmdlet
+    {
+        [Parameter(Position = 0, Mandatory = true)]
+        public ObjectClass ObjectClass;
+
+        [Parameter(Position = 1, Mandatory = true)]
+        public Uid Uid;
+
+        protected override void ProcessRecord()
+        {
+            var pair = ObjectCacheLibrary.Instance.Get(ObjectClass, Uid);
+            WriteObject(pair);
+        }
+    }
+
     [Cmdlet(VerbsCommon.Set, "ConnectorObjectCache")]
     public class UpdateConnectorObject : PSCmdlet
     {
@@ -39,7 +55,7 @@ namespace MsPowerShellTestModule
     }
 
     [Cmdlet(VerbsCommon.Search, "ConnectorObjectCache")]
-    public class GetConnectorObject : PSCmdlet
+    public class SearchConnectorObject : PSCmdlet
     {
         [Parameter(Mandatory = true)]
         public ObjectClass ObjectClass;
@@ -220,11 +236,23 @@ namespace MsPowerShellTestModule
         {
             ConcurrentDictionary<string, Pair<ConnectorObject, DateTime>> storage = GetStore(objectClass);
             Pair<ConnectorObject, DateTime> removedValue;
-            if (storage.TryRemove(uid.GetUidValue(), out removedValue))
+            if (!storage.TryRemove(uid.GetUidValue(), out removedValue))
             {
                 throw new UnknownUidException(uid, objectClass);
             }
         }
+
+        internal virtual Pair<ConnectorObject, DateTime> Get(ObjectClass objectClass, Uid uid)
+        {
+            ConcurrentDictionary<string, Pair<ConnectorObject, DateTime>> storage = GetStore(objectClass);
+            Pair<ConnectorObject, DateTime> entry;
+            if (!storage.TryGetValue(uid.GetUidValue(), out entry))
+            {
+                throw new UnknownUidException(uid, objectClass);
+            }
+            return entry;
+        }
+
 
         private class ComparatorAnonymousInnerClassHelper : IComparer<object>
         {

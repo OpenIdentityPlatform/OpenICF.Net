@@ -472,7 +472,7 @@ namespace MSPowerShellConnectorTests
         [Category("Search")]
         public void TestGetObject()
         {
-            var co = GetFacade().GetObject(Test, new Uid("001"), null);
+            var co = GetFacade().GetObject(Test, new Uid("1"), null);
             Assert.IsNotNull(co);
         }
 
@@ -500,44 +500,44 @@ namespace MSPowerShellConnectorTests
             Assert.IsEmpty(result);
         }
 
-        //[Test]
-        //[Category("Search")]
-        //public virtual void TestSearch2()
-        //{
-        //    ConnectorFacade search = GetFacade();
-        //    for (int i = 0; i < 100; i++)
-        //    {
-        //        ICollection<ConnectorAttribute> co = GetTestCreateConnectorObject(string.Format("TEST{0:D5}", i));
-        //        co.Add(ConnectorAttributeBuilder.Build("sortKey", i));
-        //        search.Create(ObjectClass.ACCOUNT, co, null);
-        //    }
+        [Test]
+        [Category("Search")]
+        public virtual void TestSearch2()
+        {
+            ConnectorFacade search = GetFacade();
+            for (int i = 0; i < 100; i++)
+            {
+                ICollection<ConnectorAttribute> co = GetTestCreateConnectorObject(string.Format("TEST{0:D5}", i));
+                co.Add(ConnectorAttributeBuilder.Build("sortKey", i));
+                search.Create(ObjectClass.ACCOUNT, co, null);
+            }
 
-        //    OperationOptionsBuilder builder = new OperationOptionsBuilder { PageSize = 10, SortKeys = new[] { new SortKey("sortKey", false) } };
-        //    SearchResult result = null;
+            OperationOptionsBuilder builder = new OperationOptionsBuilder { PageSize = 10, SortKeys = new[] { new SortKey("sortKey", false) } };
+            SearchResult result = null;
 
-        //    ICollection<ConnectorObject> resultSet = new HashSet<ConnectorObject>();
-        //    int pageIndex = 0;
+            ICollection<ConnectorObject> resultSet = new HashSet<ConnectorObject>();
+            int pageIndex = 0;
+            int index = 101;
 
-        //    int index = 101;
-        //    while ((result = search.Search(ObjectClass.ACCOUNT, FilterBuilder.StartsWith(ConnectorAttributeBuilder.Build(Name.NAME, "TEST")), new ResultsHandler()
-        //    {
-        //        Handle = connectorObject =>
-        //        {
-        //            int? idx = ConnectorAttributeUtil.GetIntegerValue(connectorObject.GetAttributeByName("sortKey"));
-        //            Assert.IsTrue(idx < index);
-        //            if (idx != null) { index = (int)idx; }
-        //            resultSet.Add(connectorObject);
-        //            return true;
-        //        }
-        //    }, builder.Build())).PagedResultsCookie != null)
-        //    {
+            while ((result = search.Search(ObjectClass.ACCOUNT, FilterBuilder.StartsWith(ConnectorAttributeBuilder.Build(Name.NAME, "TEST")), new ResultsHandler()
+            {
+                Handle = connectorObject =>
+                {
+                    int? idx = ConnectorAttributeUtil.GetIntegerValue(connectorObject.GetAttributeByName("sortKey"));
+                    Assert.IsTrue(idx < index);
+                    if (idx != null) { index = (int)idx; }
+                    resultSet.Add(connectorObject);
+                    return true;
+                }
+            }, builder.Build())).PagedResultsCookie != null)
+            {
 
-        //        builder = new OperationOptionsBuilder(builder.Build()) { PagedResultsCookie = result.PagedResultsCookie };
-        //        Assert.AreEqual(10 * ++pageIndex, resultSet.Count);
-        //    }
-        //    Assert.AreEqual(9, pageIndex);
-        //    Assert.AreEqual(100, resultSet.Count);
-        //}
+                builder = new OperationOptionsBuilder(builder.Build()) { PagedResultsCookie = result.PagedResultsCookie };
+                Assert.AreEqual(10 * ++pageIndex, resultSet.Count);
+            }
+            Assert.AreEqual(9, pageIndex);
+            Assert.AreEqual(100, resultSet.Count);
+        }
 
         [Test]
         [Category("Search")]
@@ -550,17 +550,17 @@ namespace MSPowerShellConnectorTests
         // End of Groovy from
 
         /*FilterBuilder.EqualTo(ConnectorAttributeBuilder.Build(Name.NAME, "Foo"))*/
-        [Test]
-        [Category("Search")]
-        public void TestNullQuery()
-        {
-            var result = new List<ConnectorObject>();
-            GetFacade().Search(ObjectClass.ACCOUNT, null, new ResultsHandler()
-            {
-                Handle = connectorObject => { result.Add(connectorObject); return true; }
-            }, null);
-            Assert.AreEqual(2, result.Count);
-        }
+        //[Test]
+        //[Category("Search")]
+        //public void TestNullQuery()
+        //{
+        //    var result = new List<ConnectorObject>();
+        //    GetFacade().Search(ObjectClass.ACCOUNT, null, new ResultsHandler()
+        //    {
+        //        Handle = connectorObject => { result.Add(connectorObject); return true; }
+        //    }, null);
+        //    Assert.AreEqual(2, result.Count);
+        //}
 
         [Test]
         [Category("Search")]
@@ -915,16 +915,16 @@ namespace MSPowerShellConnectorTests
         // Update Operation Test
         // =====================================================
 
-        //[Test]
-        //[Category("Update")]
-        //public void TestUpdate()
-        //{
-        //    Uid uid = CreateTestUser("TESTOK01");
-        //    var updateAttributes = new List<ConnectorAttribute>(1);
-        //    updateAttributes.Add(ConnectorAttributeBuilder.Build("email", "foo@example.com"));
+        [Test]
+        [Category("Update")]
+        public void TestUpdate()
+        {
+            Uid uid = CreateTestUser("TESTOK01");
+            var updateAttributes = new List<ConnectorAttribute>(1);
+            updateAttributes.Add(ConnectorAttributeBuilder.Build("email", "foo@example.com"));
 
-        //    uid = GetFacade().Update(ObjectClass.ACCOUNT, uid, updateAttributes, null);
-        //}
+            uid = GetFacade().Update(ObjectClass.ACCOUNT, uid, updateAttributes, null);
+        }
 
         //[Test]
         //[Category("Update")]

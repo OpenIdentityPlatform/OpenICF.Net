@@ -61,9 +61,77 @@ try
 		"__ACCOUNT__"
 		{
 			$resultSet = Search-ConnectorObjectCache -ObjectClass $Connector.ObjectClass -Query $Connector.Query -SortKeys $Connector.Options.SortKeys
-			foreach($res in $resultSet)
+			
+			if ($Connector.Options.PageSize -ne $null)
 			{
-				$Connector.Result.Process($res)
+				$pagedResultsCookie = $Connector.Options.PagedResultsCookie
+				$currentPagedResultsCookie = $Connector.Options.PagedResultsCookie
+				
+				$pagedResultsOffset = 0
+				if ($Connector.Options.PagedResultsOffset -ne $null)
+				{
+					$pagedResultsOffset = $Connector.Options.PagedResultsOffset
+				}
+				
+				$pageSize = $Connector.Options.PageSize
+				$index = 0
+				$pageStartIndex = 0
+				if ($Connector.Options.PagedResultsCookie -ne $null)
+				{
+					$pageStartIndex = -1
+				}
+				$handled = 0
+				
+				foreach($entry in $resultSet)
+				{
+					if(($pageStartIndex -lt 0) -and ($pagedResultsCookie -eq $entry.Name.GetNameValue()))
+					{
+						$pageStartIndex = $index + 1
+					}
+					
+					if(($pageStartIndex -lt 0) -or ($index -lt $pageStartIndex))
+					{
+						$index++
+						continue
+					}
+					
+					if($handled -ge $pageSize)
+					{
+						break
+					}
+					
+					if($index -ge $pagedResultsOffset + $pageStartIndex)
+					{
+						if($Connector.Result.Process($entry))
+						{
+							$handled++
+							$currentPagedResultsCookie = $entry.Name.GetNameValue()
+						}
+						else
+						{
+							break
+						}
+					}
+					$index++
+				}
+				
+				if($index -eq @($resultSet).Length)
+				{
+					$currentPagedResultsCookie = $null
+				}
+				$length = @($resultSet).Length - $index
+				$complete = New-Object Org.IdentityConnectors.Framework.Common.Objects.SearchResult($currentPagedResultsCookie, $length) 
+				$Connector.Result.Complete($complete)
+			}
+			else
+			{
+				foreach($res in $resultSet)
+				{
+					if(! $Connector.Result.Process($res))
+					{
+						break
+					}
+				}
 			}
 		}
 		"__GROUP__"
@@ -80,6 +148,7 @@ try
 					$attrToGet.Add($a,$true)
 				}
 			}
+			
 			$template = Get-ConnectorObjectTemplate
 			foreach($i in (0..9))
 			{
@@ -100,7 +169,10 @@ try
 				}
 			}
 		}
-		"__EMPTY__" {}
+		"__EMPTY__" 
+		{
+			return New-Object Org.IdentityConnectors.Framework.Common.Objects.SearchResult
+		}
 		default
 		{	
 			throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")
