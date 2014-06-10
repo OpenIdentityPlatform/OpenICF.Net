@@ -25,9 +25,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.Reflection;
 using System.Security;
+using MsPowerShellTestModule;
 using NUnit.Framework;
 using Org.ForgeRock.OpenICF.Connectors.MsPowerShell;
 using Org.IdentityConnectors.Common;
@@ -1067,7 +1070,13 @@ namespace MSPowerShellConnectorTests
             if (null == _facade)
             {
                 PropertyBag propertyBag = TestHelpers.GetProperties(clazz.RawType);
-                var importModules = new string[] {"C:\\OpenICF\\fr-branches\\openicf-powershell-connector-1.4.0.x\\Samples\\Tests\\TestModule.psm1"};
+
+                string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string testModulePath = Path.GetFullPath(Path.Combine(assemblyFolder, "..\\..\\..\\Samples\\Tests\\TestModule.psm1"));
+                string objectChacheModulePath = typeof(ObjectCacheLibrary).Assembly.Location;
+
+                var importModules = new string[] { testModulePath, objectChacheModulePath };
+                
 
                 APIConfiguration impl = TestHelpers.CreateTestConfiguration(clazz, propertyBag, "configuration");
                 impl.ConfigurationProperties.SetPropertyValue("PsModulesToImport", importModules);
