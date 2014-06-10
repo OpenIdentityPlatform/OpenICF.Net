@@ -154,16 +154,16 @@ namespace MSPowerShellConnectorTests
             GetFacade().Authenticate(Test, "TESTOK2", new GuardedString(GetSecure("NOT_EMPTY")), null);
         }
 
-        // =====================================================
-        // Create Operation Test
-        // =====================================================
+         //=====================================================
+         //Create Operation Test
+         //=====================================================
 
-        //[Test]
-        //[Category("Create")]
-        //public void TestCreate()
-        //{
-        //    Assert.NotNull(CreateTestUser("Foo"));
-        //}
+        [Test]
+        [Category("Create")]
+        public void TestCreate()
+        {
+            Assert.NotNull(CreateTestUser("Foo"));
+        }
 
         [Test]
         [Category("Create")]
@@ -1088,7 +1088,7 @@ namespace MSPowerShellConnectorTests
                 impl.ResultsHandlerConfiguration.EnableNormalizingResultsHandler = false;
 
                 //We timeout after 10s
-                impl.SetTimeout(SafeType<APIOperation>.ForRawType(typeof(CreateApiOp)), 10000);
+                impl.SetTimeout(SafeType<APIOperation>.ForRawType(typeof(CreateApiOp)), 1000000);
                 impl.SetTimeout(SafeType<APIOperation>.ForRawType(typeof(UpdateApiOp)), 10000);
                 impl.SetTimeout(SafeType<APIOperation>.ForRawType(typeof(DeleteApiOp)), 10000);
                 _facade = ConnectorFacadeFactory.GetInstance().NewInstance(impl);

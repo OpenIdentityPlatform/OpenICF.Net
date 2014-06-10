@@ -36,7 +36,7 @@ your own identifying information:
   <property name="configuration.ResolveUsernameScriptFileName" value="..\..\..\Samples\Tests\ResolveUsername.ps1"/>
   <property name="configuration.UidAttributeName" value="__UID__"/>
   <property name="configuration.NameAttributeName" value="__NAME__"/>
-  <property name="configuration.QueryFilterType" value="Map"/>
+  <property name="configuration.QueryFilterType" value="Native"/>
   <property name="configuration.SubstituteUidAndNameInQueryFilter" value="False"/>
   <property name="configuration.VariablesPrefix" value="Connector"/>
 </config>

@@ -62,7 +62,16 @@ if ($Connector.Operation -eq "CREATE")
 {
 	switch ($Connector.ObjectClass.Type)
 	{
-		"__ACCOUNT__" 	{}
+		"__ACCOUNT__" 	
+		{
+			$cobld = New-Object Org.IdentityConnectors.Framework.Common.Objects.ConnectorObjectBuilder
+			$cobld.setUid($Connector.Id)
+			$cobld.setName($Connector.Id)
+			$cobld.ObjectClass = $Connector.ObjectClass
+			$cobld.AddAttributes($Connector.Attributes)
+			
+			$Connector.Result.Uid = New-ConnectorObjectCache $cobld.Build()
+		}
 		"__GROUP__" 	{}
 		"__ALL__" 		{throw "ICF Framework must reject this"}
 		"__TEST__" 		

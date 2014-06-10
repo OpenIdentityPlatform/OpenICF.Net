@@ -12,32 +12,67 @@ using SortKey = Org.IdentityConnectors.Framework.Common.Objects.SortKey;
 
 namespace MsPowerShellTestModule
 {
-    [Cmdlet(VerbsCommon.Get, "ConnectorObjectCreate")]
-    public class Create_ConnectorObject : PSCmdlet
+    [Cmdlet(VerbsCommon.New, "ConnectorObjectCache")]
+    public class CreateConnectorObject : PSCmdlet
     {
         [Parameter(Position = 0, Mandatory = true)]
         public ConnectorObject ConnectorObject;
 
         protected override void ProcessRecord()
         {
-            WriteObject("Hello From Create Cmdlet");
-            ObjectCacheLibrary.Instance.Create(ConnectorObject);
+            var uid = ObjectCacheLibrary.Instance.Create(ConnectorObject);
+            WriteObject(uid);
         }
     }
 
-    [Cmdlet(VerbsCommon.Get, "ConnectorObjectDelete")]
-    public class Delete_ConnectorObject : PSCmdlet
+    [Cmdlet(VerbsCommon.Set, "ConnectorObjectCache")]
+    public class UpdateConnectorObject : PSCmdlet
     {
-        
         [Parameter(Position = 0, Mandatory = true)]
+        public ConnectorObject ConnectorObject;
+
+        protected override void ProcessRecord()
+        {
+            var uid = ObjectCacheLibrary.Instance.Update(ConnectorObject);
+            WriteObject(uid);
+        }
+    }
+
+    [Cmdlet(VerbsCommon.Search, "ConnectorObjectCache")]
+    public class GetConnectorObject : PSCmdlet
+    {
+        [Parameter(Mandatory = true)]
         public ObjectClass ObjectClass;
 
-        [Parameter(Position = 1, Mandatory = true)] 
+        [Parameter(Mandatory = true)]
+        public Filter Query;
+
+        [Parameter]
+        public SortKey[] SortKeys;
+
+        protected override void ProcessRecord()
+        {
+            var co = ObjectCacheLibrary.Instance.Search(ObjectClass, Query, SortKeys);
+            if (co != null)
+                foreach (var obj in co)
+                {
+                    WriteObject(obj);
+                }
+        }
+    }
+
+
+    [Cmdlet(VerbsCommon.Remove, "ConnectorObjectCache")]
+    public class DeleteConnectorObject : PSCmdlet
+    {
+        [Parameter(Mandatory = true)]
+        public ObjectClass ObjectClass;
+
+        [Parameter(Mandatory = true)] 
         public Uid Uid;
 
         protected override void ProcessRecord()
         {
-            WriteObject("Hello From Delete Cmdlet");
             ObjectCacheLibrary.Instance.Delete(ObjectClass, Uid);
         }
     }
@@ -46,33 +81,30 @@ namespace MsPowerShellTestModule
     {
         private static readonly IComparer<object> ValueComparator = new ComparatorAnonymousInnerClassHelper();
 
-
         private readonly
             ConcurrentDictionary<ObjectClass, ConcurrentDictionary<string, Pair<ConnectorObject, DateTime>>> _store =
                 new ConcurrentDictionary<ObjectClass, ConcurrentDictionary<string, Pair<ConnectorObject, DateTime>>>();
 
-
-
-        private static volatile ObjectCacheLibrary instance;
+        private static volatile ObjectCacheLibrary _instance;
         private static object syncRoot = new Object();
-
 
         public static ObjectCacheLibrary Instance
         {
             get
             {
-                if (instance == null)
+                if (_instance == null)
                 {
                     lock (syncRoot)
                     {
-                        if (instance == null)
-                            instance = new ObjectCacheLibrary();
+                        if (_instance == null)
+                            _instance = new ObjectCacheLibrary();
                     }
                 }
 
-                return instance;
+                return _instance;
             }
         }
+
         private ObjectCacheLibrary()
         {
             _store.TryAdd(ObjectClass.ACCOUNT, new ConcurrentDictionary<string, Pair<ConnectorObject, DateTime>>());
