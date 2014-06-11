@@ -55,6 +55,7 @@
     http://openicf.forgerock.org
 #>
 
+$attrUtil = [Org.IdentityConnectors.Framework.Common.Objects.ConnectorAttributeUtil]
 # Always put code in try/catch statement and make sure exceptions are rethrown to connector
 try
 {
@@ -68,23 +69,139 @@ if ($Connector.Operation -eq "CREATE")
 			$cobld.setUid($Connector.Id)
 			$cobld.setName($Connector.Id)
 			$cobld.ObjectClass = $Connector.ObjectClass
-			$cobld.AddAttributes($Connector.Attributes)
 			
+			foreach($a in $Connector.Attributes)
+			{
+				if($a.Is("__NAME__"))
+				{ 
+					continue
+				}
+				elseif($a.Is("userName"))
+				{
+					if(($a.Value -eq $null) -or ($a.Value.Count -eq 0))
+					{
+						throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting non empty value")
+					}
+					elseif($a.Value.Count -gt 1) 
+					{
+						throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting single value")
+					}
+					elseif($attrUtil::GetSingleValue($a).GetType().Equals([string]))
+					{
+						$cobld.AddAttribute("userName",$attrUtil::GetStringValue($a))
+					}
+					else
+					{
+						throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting String value")
+					}
+				}
+				elseif($a.Is("email"))
+				{
+					if(($a.Value -eq $null) -or ($a.Value.Count -eq 0))
+					{
+						throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting non null value")
+					}
+					else
+					{
+						foreach($object in $a.Value)
+						{
+							if(!$object.GetType().Equals([string]))
+							{
+								throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting String value")
+							}
+						}
+						$cobld.AddAttribute($a)
+					}
+				}
+				elseif($a.Is("active"))
+				{
+					if(($a.Value -eq $null) -or ($a.Value.Count -eq 0))
+					{
+						throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting non empty value")
+					}
+					elseif($a.Value.Count -gt 1) 
+					{
+						throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting single value")
+					}
+					elseif($attrUtil::GetSingleValue($a).GetType().Equals([bool]))
+					{
+						$cobld.AddAttribute("active", $attrUtil::GetBooleanValue($a))
+					}
+					else
+					{
+						throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting Boolean value")
+					}
+				}
+				elseif($a.Is("createDate"))
+				{
+					throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Try update non modifiable attribute")
+				}
+				elseif($a.Is("lastModified"))
+				{
+					throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Try update non modifiable attribute")
+				}
+				elseif($a.Is("passwordHistory"))
+				{
+					throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Try update non modifiable attribute")
+				}
+				elseif($a.Is("surName"))
+				{
+					if(($a.Value -eq $null) -or ($a.Value.Count -eq 0))
+					{
+						$cobld.AddAttribute("surName")
+					}
+					elseif($a.Value.Count -gt 1) 
+					{
+						throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting single value")
+					}
+					elseif($attrUtil::GetSingleValue($a).GetType().Equals([string]))
+					{
+						$cobld.AddAttribute("surName",$attrUtil::GetStringValue($a))
+					}
+					else
+					{
+						throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting String value")
+					}
+				}
+				else
+				{
+					$cobld.AddAttribute($a)
+				}
+			}
+			$now = (Get-Date).ToString()
+			$cobld.AddAttribute("lastModified", $now)
+			$cobld.AddAttribute("createDate", $now)
 			$Connector.Result.Uid = New-ConnectorObjectCache $cobld.Build()
 		}
-		"__GROUP__" 	{}
-		"__ALL__" 		{throw "ICF Framework must reject this"}
+		"__GROUP__" 	
+		{
+			$cobld = New-Object Org.IdentityConnectors.Framework.Common.Objects.ConnectorObjectBuilder
+			$cobld.setUid($Connector.Id)
+			$cobld.setName($Connector.Id)
+			$cobld.ObjectClass = $Connector.ObjectClass
+			$cobld.AddAttributes($Connector.Attributes)	
+			$Connector.Result.Uid = New-ConnectorObjectCache $cobld.Build()
+		}
+		"__ALL__" 		{Write-error "ICF Framework must reject this"}
 		"__TEST__" 		
 		{
 			$uid = New-Object Org.IdentityConnectors.Framework.Common.Objects.Uid($Connector.Id, "0")
 			$Connector.Result.Uid = Exception-Test -Operation $Connector.Operation -ObjectClass $Connector.ObjectClass -Uid $uid -Options $Connector.Options
 		}
-		"__SAMPLE__" 	{throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")}
-		default 		{throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")}			
+		"__SAMPLE__"
+		{
+			$cobld = New-Object Org.IdentityConnectors.Framework.Common.Objects.ConnectorObjectBuilder
+			$cobld.setUid($Connector.Id)
+			$cobld.setName($Connector.Id)
+			$cobld.ObjectClass = $Connector.ObjectClass
+			$cobld.AddAttributes($Connector.Attributes)	
+			$Connector.Result.Uid = New-ConnectorObjectCache $cobld.Build()
+		}
+		default 		{throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type) is not supported")}			
 	} 
 }
 }
-catch #Rethrow the original exception
+catch #Re-throw the original exception
 {
 	throw
 }

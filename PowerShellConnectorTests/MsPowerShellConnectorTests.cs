@@ -351,23 +351,23 @@ namespace MSPowerShellConnectorTests
 
         // End of Groovy from
 
-        [Test]
-        [Category("Delete")]
-        public void TestDeleteOK()
-        {
-            // Will succeed
-            GetFacade().Delete(ObjectClass.ACCOUNT, new Uid("smith"), null);
-        }
+        //[Test]
+        //[Category("Delete")]
+        //public void TestDeleteOK()
+        //{
+        //    // Will succeed
+        //    GetFacade().Delete(ObjectClass.ACCOUNT, new Uid("smith"), null);
+        //}
 
 
-        [Test]
-        [Category("Delete")]
-        [ExpectedException(typeof(UnknownUidException))]
-        public void TestDeleteNOK()
-        {
-            // Will fail
-            GetFacade().Delete(ObjectClass.ACCOUNT, new Uid("doe"), null);
-        }
+        //[Test]
+        //[Category("Delete")]
+        //[ExpectedException(typeof(UnknownUidException))]
+        //public void TestDeleteNOK()
+        //{
+        //    // Will fail
+        //    GetFacade().Delete(ObjectClass.ACCOUNT, new Uid("doe"), null);
+        //}
 
         // =====================================================
         // ResolveUsername Operation Test
@@ -463,6 +463,17 @@ namespace MSPowerShellConnectorTests
         //    Assert.Fail();
         //}
 
+        // =====================================================
+        // Get Operation Test
+        // =====================================================
+
+        [Test]
+        [Category("Get")]
+        public void TestGet()
+        {
+            var co = GetFacade().GetObject(Test, new Uid("1"), null);
+            Assert.IsNotNull(co);
+        }
 
         // =====================================================
         // Search Operation Test
@@ -470,7 +481,7 @@ namespace MSPowerShellConnectorTests
 
         [Test]
         [Category("Search")]
-        public void TestGetObject()
+        public void TestSearch()
         {
             var co = GetFacade().GetObject(Test, new Uid("1"), null);
             Assert.IsNotNull(co);
@@ -531,7 +542,7 @@ namespace MSPowerShellConnectorTests
                 }
             }, builder.Build())).PagedResultsCookie != null)
             {
-
+                
                 builder = new OperationOptionsBuilder(builder.Build()) { PagedResultsCookie = result.PagedResultsCookie };
                 Assert.AreEqual(10 * ++pageIndex, resultSet.Count);
             }
@@ -562,35 +573,35 @@ namespace MSPowerShellConnectorTests
         //    Assert.AreEqual(2, result.Count);
         //}
 
-        [Test]
-        [Category("Search")]
-        public void TestEqualsQuery()
-        {
-            var result = new List<ConnectorObject>();
-            GetFacade().Search(ObjectClass.ACCOUNT, FilterBuilder.EqualTo(ConnectorAttributeBuilder.Build(Uid.NAME, "001")), new ResultsHandler()
-            {
-                Handle = connectorObject => { result.Add(connectorObject); return true; }
-            }, null);
+        //[Test]
+        //[Category("Search")]
+        //public void TestEqualsQuery()
+        //{
+        //    var result = new List<ConnectorObject>();
+        //    GetFacade().Search(ObjectClass.ACCOUNT, FilterBuilder.EqualTo(ConnectorAttributeBuilder.Build(Uid.NAME, "001")), new ResultsHandler()
+        //    {
+        //        Handle = connectorObject => { result.Add(connectorObject); return true; }
+        //    }, null);
 
-            Assert.AreEqual(1, result.Count);
-            var co = result[0];
-            Assert.IsTrue("User 1".Equals(co.Name.GetNameValue()));
-        }
+        //    Assert.AreEqual(1, result.Count);
+        //    var co = result[0];
+        //    Assert.IsTrue("User 1".Equals(co.Name.GetNameValue()));
+        //}
 
-        [Test]
-        [Category("Search")]
-        public void TestStartsWithQuery()
-        {
-            var result = new List<ConnectorObject>();
-            GetFacade().Search(ObjectClass.ACCOUNT, FilterBuilder.StartsWith(ConnectorAttributeBuilder.Build("sn", "SMITH")), new ResultsHandler()
-            {
-                Handle = connectorObject => { result.Add(connectorObject); return true; }
-            }, null);
+        //[Test]
+        //[Category("Search")]
+        //public void TestStartsWithQuery()
+        //{
+        //    var result = new List<ConnectorObject>();
+        //    GetFacade().Search(ObjectClass.ACCOUNT, FilterBuilder.StartsWith(ConnectorAttributeBuilder.Build("sn", "SMITH")), new ResultsHandler()
+        //    {
+        //        Handle = connectorObject => { result.Add(connectorObject); return true; }
+        //    }, null);
 
-            Assert.AreEqual(1, result.Count);
-            var co = result[0];
-            Assert.IsTrue("Smith".Equals(ConnectorAttributeUtil.GetAsStringValue(co.GetAttributeByName("sn"))));
-        }
+        //    Assert.AreEqual(1, result.Count);
+        //    var co = result[0];
+        //    Assert.IsTrue("Smith".Equals(ConnectorAttributeUtil.GetAsStringValue(co.GetAttributeByName("sn"))));
+        //}
 
         // =====================================================
         // Sync Operation Test
@@ -828,7 +839,7 @@ namespace MSPowerShellConnectorTests
             Assert.AreEqual(3, result.Count);
             SyncDelta sdelta = result[0];
             result.RemoveAt(0);
-            Assert.AreEqual(SyncDeltaType.CREATE, sdelta.DeltaType);
+            Assert.AreEqual(SyncDeltaType.CREATE_OR_UPDATE, sdelta.DeltaType);
             Assert.AreEqual(4, sdelta.Object.GetAttributes().Count);
         }
 
@@ -926,79 +937,78 @@ namespace MSPowerShellConnectorTests
             uid = GetFacade().Update(ObjectClass.ACCOUNT, uid, updateAttributes, null);
         }
 
-        //[Test]
-        //[Category("Update")]
-        //[ExpectedException(typeof(InvalidAttributeValueException), ExpectedMessage = "Expecting non null value")]
+        [Test]
+        [Category("Update")]
+        [ExpectedException(typeof(InvalidAttributeValueException), ExpectedMessage = "Expecting non null value")]
 
-        //public void TestUpdateFailEmpty()
-        //{
-        //    Uid uid = CreateTestUser("FAIL01");
-        //    var updateAttributes = new List<ConnectorAttribute>(1);
-        //    updateAttributes.Add(ConnectorAttributeBuilder.Build("email"));
+        public void TestUpdateFailEmpty()
+        {
+            Uid uid = CreateTestUser("FAIL01");
+            var updateAttributes = new List<ConnectorAttribute>(1) {ConnectorAttributeBuilder.Build("email")};
 
-        //    uid = GetFacade().Update(ObjectClass.ACCOUNT, uid, updateAttributes, null);
-        //    Assert.Fail("Connector operation should fail");
-        //}
+            uid = GetFacade().Update(ObjectClass.ACCOUNT, uid, updateAttributes, null);
+            Assert.Fail("Connector operation should fail");
+        }
 
-        //[Test]
-        //[Category("Update")]
-        //[ExpectedException(typeof(InvalidAttributeValueException), ExpectedMessage = "Expecting Boolean value")]
-        //public void TestUpdateFailType()
-        //{
-        //    Uid uid = CreateTestUser("FAIL02");
-        //    var updateAttributes = new List<ConnectorAttribute>(1);
-        //    updateAttributes.Add(ConnectorAttributeBuilder.Build("active", "true"));
+        [Test]
+        [Category("Update")]
+        [ExpectedException(typeof(InvalidAttributeValueException), ExpectedMessage = "Expecting Boolean value")]
+        public void TestUpdateFailType()
+        {
+            Uid uid = CreateTestUser("FAIL02");
+            var updateAttributes = new List<ConnectorAttribute>(1);
+            updateAttributes.Add(ConnectorAttributeBuilder.Build("active", "true"));
 
-        //    uid = GetFacade().Update(ObjectClass.ACCOUNT, uid, updateAttributes, null);
-        //    Assert.Fail("Connector operation should fail");
-        //}
+            uid = GetFacade().Update(ObjectClass.ACCOUNT, uid, updateAttributes, null);
+            Assert.Fail("Connector operation should fail");
+        }
 
-        //[Test]
-        //[Category("Update")]
-        //[ExpectedException(typeof(InvalidAttributeValueException), ExpectedMessage = "Expecting single value")]
+        [Test]
+        [Category("Update")]
+        [ExpectedException(typeof(InvalidAttributeValueException), ExpectedMessage = "Expecting single value")]
 
-        //public void TestUpdateFailMulti()
-        //{
-        //    Uid uid = CreateTestUser("FAIL03");
-        //    var updateAttributes = new List<ConnectorAttribute>(1);
-        //    updateAttributes.Add(ConnectorAttributeBuilder.Build("userName", "name1", "name2"));
+        public void TestUpdateFailMulti()
+        {
+            Uid uid = CreateTestUser("FAIL03");
+            var updateAttributes = new List<ConnectorAttribute>(1);
+            updateAttributes.Add(ConnectorAttributeBuilder.Build("userName", "name1", "name2"));
 
-        //    uid = GetFacade().Update(ObjectClass.ACCOUNT, uid, updateAttributes, null);
-        //    Assert.Fail("Connector operation should fail");
-        //}
+            uid = GetFacade().Update(ObjectClass.ACCOUNT, uid, updateAttributes, null);
+            Assert.Fail("Connector operation should fail");
+        }
 
-        //[Test]
-        //[Category("Update")]
-        //[ExpectedException(typeof(InvalidAttributeValueException), ExpectedMessage = "Try update non modifiable attribute")]
-        //public void TestUpdateFailReadOnly()
-        //{
-        //    Uid uid = CreateTestUser("FAIL04");
-        //    var updateAttributes = new List<ConnectorAttribute>(1);
-        //    updateAttributes.Add(ConnectorAttributeBuilder.Build("lastModified", "newValue"));
+        [Test]
+        [Category("Update")]
+        [ExpectedException(typeof(InvalidAttributeValueException), ExpectedMessage = "Try update non modifiable attribute")]
+        public void TestUpdateFailReadOnly()
+        {
+            Uid uid = CreateTestUser("FAIL04");
+            var updateAttributes = new List<ConnectorAttribute>(1);
+            updateAttributes.Add(ConnectorAttributeBuilder.Build("lastModified", "newValue"));
 
-        //    uid = GetFacade().Update(ObjectClass.ACCOUNT, uid, updateAttributes, null);
-        //    Assert.Fail("Connector operation should fail");
-        //}
+            uid = GetFacade().Update(ObjectClass.ACCOUNT, uid, updateAttributes, null);
+            Assert.Fail("Connector operation should fail");
+        }
 
-        //[Test]
-        //[Category("Update")]
-        //[ExpectedException(typeof(OperationTimeoutException))]
-        //public void TestUpdateTimeOut()
-        //{
-        //    GetFacade().Update(Test, new Uid("TIMEOUT"),
-        //            CollectionUtil.NewSet(ConnectorAttributeBuilder.Build("null")), null);
-        //    Assert.Fail();
-        //}
+        [Test]
+        [Category("Update")]
+        [ExpectedException(typeof(OperationTimeoutException))]
+        public void TestUpdateTimeOut()
+        {
+            GetFacade().Update(Test, new Uid("TIMEOUT"),
+                    CollectionUtil.NewSet(ConnectorAttributeBuilder.Build("null")), null);
+            Assert.Fail();
+        }
 
-        //[Test]
-        //[Category("Update")]
-        //[ExpectedException(typeof(NotSupportedException))]
-        //public void TestUpdateUnsupportedObjectClass()
-        //{
-        //    var updateAttributes = new List<ConnectorAttribute>(1);
-        //    updateAttributes.Add(ConnectorAttributeBuilder.Build("email", "foo@example.com"));
-        //    GetFacade().Update(Unknown, new Uid("TESTOK1"), updateAttributes, null);
-        //}
+        [Test]
+        [Category("Update")]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void TestUpdateUnsupportedObjectClass()
+        {
+            var updateAttributes = new List<ConnectorAttribute>(1);
+            updateAttributes.Add(ConnectorAttributeBuilder.Build("email", "foo@example.com"));
+            GetFacade().Update(Unknown, new Uid("TESTOK1"), updateAttributes, null);
+        }
 
         ///// End of From Groovy 
 
@@ -1010,53 +1020,53 @@ namespace MSPowerShellConnectorTests
         //    Assert.NotNull(uid, "The Uid is null");
         //}
 
-        [Test]
-        [Category("Update")]
-        [ExpectedException(typeof(UnknownUidException))]
-        public void TestUpdate1()
-        {
-            GetFacade().Update(Test, new Uid("TEST1"), GetTestUpdateConnectorObject("TEST1"), null);
-        }
+        //[Test]
+        //[Category("Update")]
+        //[ExpectedException(typeof(UnknownUidException))]
+        //public void TestUpdate1()
+        //{
+        //    GetFacade().Update(Test, new Uid("TEST1"), GetTestUpdateConnectorObject("TEST1"), null);
+        //}
 
-        [Test]
-        [Category("Update")]
-        [ExpectedException(typeof(InvalidAttributeValueException))]
-        public void TestUpdate2()
-        {
-            GetFacade().Update(Test, new Uid("TEST2"), GetTestUpdateConnectorObject("TEST2"), null);
-        }
+        //[Test]
+        //[Category("Update")]
+        //[ExpectedException(typeof(InvalidAttributeValueException))]
+        //public void TestUpdate2()
+        //{
+        //    GetFacade().Update(Test, new Uid("TEST2"), GetTestUpdateConnectorObject("TEST2"), null);
+        //}
 
-        [Test]
-        [Category("Update")]
-        [ExpectedException(typeof(ArgumentException))]
-        public void TestUpdate3()
-        {
-            GetFacade().Update(Test, new Uid("TEST3"), GetTestUpdateConnectorObject("TEST3"), null);
-        }
+        //[Test]
+        //[Category("Update")]
+        //[ExpectedException(typeof(ArgumentException))]
+        //public void TestUpdate3()
+        //{
+        //    GetFacade().Update(Test, new Uid("TEST3"), GetTestUpdateConnectorObject("TEST3"), null);
+        //}
 
-        [Test]
-        [Category("Update")]
-        [ExpectedException(typeof(PreconditionFailedException))]
-        public void TestUpdate4()
-        {
-            GetFacade().Update(Test, new Uid("TEST4"), GetTestUpdateConnectorObject("TEST4"), null);
-        }
+        //[Test]
+        //[Category("Update")]
+        //[ExpectedException(typeof(PreconditionFailedException))]
+        //public void TestUpdate4()
+        //{
+        //    GetFacade().Update(Test, new Uid("TEST4"), GetTestUpdateConnectorObject("TEST4"), null);
+        //}
 
-        [Test]
-        [Category("Update")]
-        [ExpectedException(typeof(PreconditionRequiredException))]
-        public void TestUpdate5()
-        {
-            GetFacade().Update(Test, new Uid("TEST5"), GetTestUpdateConnectorObject("TEST5"), null);
-        }
+        //[Test]
+        //[Category("Update")]
+        //[ExpectedException(typeof(PreconditionRequiredException))]
+        //public void TestUpdate5()
+        //{
+        //    GetFacade().Update(Test, new Uid("TEST5"), GetTestUpdateConnectorObject("TEST5"), null);
+        //}
 
-        [Test]
-        [Category("Update")]
-        [ExpectedException(typeof(RuntimeException))]
-        public void TestUpdate7()
-        {
-            GetFacade().Update(ObjectClass.GROUP, new Uid("Group1"), GetTestUpdateConnectorObject("Group1"), null);
-        }
+        //[Test]
+        //[Category("Update")]
+        //[ExpectedException(typeof(RuntimeException))]
+        //public void TestUpdate7()
+        //{
+        //    GetFacade().Update(ObjectClass.GROUP, new Uid("Group1"), GetTestUpdateConnectorObject("Group1"), null);
+        //}
 
         protected ConnectorFacade GetFacade()
         {
@@ -1116,7 +1126,7 @@ namespace MSPowerShellConnectorTests
                 ConnectorAttributeBuilder.Build("email", name + "@example.com"),
                 ConnectorAttributeBuilder.BuildEnabled(true),    
                 ConnectorAttributeBuilder.Build("firstName", "John"),
-                ConnectorAttributeBuilder.Build("sn", name.ToUpper()),
+                ConnectorAttributeBuilder.Build("surName", name.ToUpper()),
                 ConnectorAttributeBuilder.BuildPassword(new GuardedString(GetSecure(Password))),
                 ConnectorAttributeBuilder.Build(PredefinedAttributes.DESCRIPTION, "Description"),
                 ConnectorAttributeBuilder.Build("groups", "group1", "group2"),                

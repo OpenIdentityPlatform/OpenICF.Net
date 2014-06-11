@@ -73,8 +73,8 @@ if ($Connector.Operation -eq "DELETE")
 		"__GROUP__" 	{}
 		"__ALL__" 		{throw "ICF Framework must reject this"}
 		"__TEST__" 		{Exception-Test -Operation $Connector.Operation -ObjectClass $Connector.ObjectClass -Uid $Connector.Uid -Options $Connector.Options}
-		"__SAMPLE__" 	{throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")}
-		default 		{throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")}
+		"__SAMPLE__" 	{throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type) is not supported")}
+		default 		{throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type) is not supported")}
 	}
 }
 }

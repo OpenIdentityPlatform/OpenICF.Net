@@ -43,14 +43,34 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             _handler = handler;
         }
 
+        public void Complete()
+        {
+            ((SearchResultsHandler)_handler).HandleResult(new SearchResult(null, -1));
+        }
+
         public void Complete(String searchResult)
         {
-                ((SearchResultsHandler)_handler).HandleResult(new SearchResult((string)searchResult, -1));
+            String cookie = null;
+            if (!String.IsNullOrEmpty(searchResult))
+            {
+                cookie = searchResult;
+            }
+            ((SearchResultsHandler)_handler).HandleResult(new SearchResult(cookie, -1));
         }
 
         public void Complete(SearchResult searchResult)
         {
-                ((SearchResultsHandler)_handler).HandleResult((SearchResult)searchResult);
+            String cookie = null;
+            int pages = -1;
+            if (searchResult != null)
+            {
+                if (!String.IsNullOrEmpty(searchResult.PagedResultsCookie))
+                {
+                    cookie = searchResult.PagedResultsCookie;    
+                }
+                pages = searchResult.RemainingPagedResults;
+            }
+            ((SearchResultsHandler)_handler).HandleResult(new SearchResult(cookie, pages));
         }
 
         public Boolean Process(ConnectorObject result)

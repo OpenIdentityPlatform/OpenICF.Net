@@ -78,13 +78,14 @@ try
 			"__TEST__" 		{$Connector.Result.SyncToken = 0}
 			"__SAMPLE__" 
 			{
-				$a = Get-Date
-				$token = New-Object Org.IdentityConnectors.Framework.Common.Objects.SyncToken($a.ToUniversalTime().ToString());
-				$Connector.Result.SyncToken = $token;
+				#$a = Get-Date
+				#$token = New-Object Org.IdentityConnectors.Framework.Common.Objects.SyncToken($a.ToUniversalTime().ToString());
+				#$Connector.Result.SyncToken = $token;
+				$Connector.Result.SyncToken = "ANY OBJECT"
 			}
 			default 
 			{
-				throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")
+				throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type) is not supported")
 			}
 		}
 	}
@@ -130,9 +131,10 @@ try
 				}
 				{(5,6,7,8,9) -contains $_} # EMPTY/FILTERED CHANGE RANGE
 				{
+					Write-Verbose -verbose "Sync empty change range"
 					$Connector.Result.Complete(10);
 				}
-				10 # Multiple updates
+				{(10..16) -contains $_}  # Multiple updates
 				{
 					$object1 = @{"__UID__" = "003"; "__NAME__" = "Foo"}
 					$result1 = @{"SyncToken" = 10; "DeltaType" = "CREATE"; "Uid" = "003"; "Object" = $object1}
@@ -165,16 +167,16 @@ try
 			for ($i=11; $i -le 16; $i = $i + 2)
 			{					
 				$cobld = New-Object Org.IdentityConnectors.Framework.Common.Objects.ConnectorObjectBuilder
-				$cobld.setName("Foo")
-				$cobld.setUid("001")
+				$cobld.setName("group1")
+				$cobld.setUid("group1")
 				$cobld.ObjectClass = [Org.IdentityConnectors.Framework.Common.Objects.ObjectClass]::GROUP
 				$cobld.AddAttribute("description","This is group Foo");
 				$cobld.AddAttribute("member",@("foo","bar"))
 				
 				$syncbld = New-Object Org.IdentityConnectors.Framework.Common.Objects.SyncDeltaBuilder
-				$syncbld.DeltaType = $deltatype::CREATE
-				$syncbld.Uid =  New-Object Org.IdentityConnectors.Framework.Common.Objects.Uid("001");
-				$syncbld.Token = New-Object Org.IdentityConnectors.Framework.Common.Objects.SyncToken(1)
+				$syncbld.DeltaType = $deltatype::CREATE_OR_UPDATE
+				$syncbld.Uid =  New-Object Org.IdentityConnectors.Framework.Common.Objects.Uid("group1");
+				$syncbld.Token = New-Object Org.IdentityConnectors.Framework.Common.Objects.SyncToken($i)
 				$syncbld.Object = $cobld.Build()
 				$Connector.Result.Process($syncbld.Build())
 			}
@@ -200,7 +202,7 @@ try
 				$cobld.AddAttribute("member",@("foo","bar"))
 						
 				$syncbld = New-Object Org.IdentityConnectors.Framework.Common.Objects.SyncDeltaBuilder
-				$syncbld.DeltaType = $deltatype::CREATE
+				$syncbld.DeltaType = $deltatype::CREATE_OR_UPDATE
 				$syncbld.Object = $cobld.Build()
 				$syncbld.Token = New-Object Org.IdentityConnectors.Framework.Common.Objects.SyncToken($i)
 						

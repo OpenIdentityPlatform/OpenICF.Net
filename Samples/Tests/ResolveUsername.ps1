@@ -69,11 +69,11 @@ try
 	}
 	else 
 	{
-		throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")
+		throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type) is not supported")
 	}
 
 }
-catch #Rethrow the original exception
+catch #Re-throw the original exception
 {
 	throw
 }

@@ -60,9 +60,9 @@ try
 {
 switch ($Connector.ObjectClass.Type)
 {
-	"__ACCOUNT__" {throw "Unsupported operation"}
-	"__GROUP__" {throw "Unsupported operation"}
-	"__ALL__" {Write-Error "ICF Framework MUST REJECT this"; break}
+	"__ACCOUNT__" {throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type) is not supported")}
+	"__GROUP__" {throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type) is not supported")}
+	"__ALL__" {Write-Error "ICF Framework MUST REJECT this"}
 	"__TEST__" {
 		switch ($Connector.Username)
 		{
@@ -96,12 +96,17 @@ switch ($Connector.ObjectClass.Type)
 			default {throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.UnknownUidException}
 		}
 	}
-	default {
-		throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")
+	"__SAMPLE__"
+	{
+		throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type) is not supported")
+	}
+	default 
+	{
+		throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type) is not supported")
 	}
 }
 }
-catch #Rethrow the original exception
+catch #Re-throw the original exception
 {
 	throw
 }

@@ -425,7 +425,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         #region UpdateOp Members
         public Uid Update(ObjectClass objectClass, Uid uid, ICollection<ConnectorAttribute> valuesToReplace, OperationOptions options)
         {
-            Trace.TraceInformation("Invoke Update ObjectClass: {0}/Uid:{1}", objectClass.GetObjectClassValue(), uid.GetUidValue());
+            Trace.TraceInformation("Invoke Update ObjectClass: {0}/{1}", objectClass.GetObjectClassValue(), uid.GetUidValue());
             try
             {
                 Uid uidAfter = ExecuteUpdate(_configuration.UpdateScriptFileName, objectClass, uid, valuesToReplace, options);
@@ -465,7 +465,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         // implementation of DeleteSpiOp
         public virtual void Delete(ObjectClass objectClass, Uid uid, OperationOptions options)
         {
-            Trace.TraceInformation("Invoke Delete ObjectClass:{0}->{1}", objectClass.GetObjectClassValue(), uid.GetUidValue());
+            Trace.TraceInformation("Invoke Delete ObjectClass:{0}/{1}", objectClass.GetObjectClassValue(), uid.GetUidValue());
 
             try
             {
@@ -612,22 +612,23 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 
         public object RunScriptOnResource(ScriptContext request, OperationOptions options)
         {
-            Trace.TraceInformation("Invoke RunScriptOnResource");
+            //Trace.TraceInformation("Invoke RunScriptOnResource");
 
-            try
-            {
-                var result = ExecuteScriptOnResource(request, options);
-                Trace.TraceInformation("RunScriptOnResource ok");
-                return result;
-            }
-            catch (Exception e)
-            {
-                if (e.InnerException != null)
-                {
-                    throw e.InnerException;
-                }
-                throw;
-            }
+            //try
+            //{
+            //    var result = ExecuteScriptOnResource(request, options);
+            //    Trace.TraceInformation("RunScriptOnResource ok");
+            //    return result;
+            //}
+            //catch (Exception e)
+            //{
+            //    if (e.InnerException != null)
+            //    {
+            //        throw e.InnerException;
+            //    }
+            //    throw;
+            //}
+            throw new NotImplementedException("RunScriptOnResource not implemented");
         }
 
         protected Object ExecuteScriptOnResource(ScriptContext request, OperationOptions options)

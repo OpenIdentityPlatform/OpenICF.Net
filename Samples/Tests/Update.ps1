@@ -53,6 +53,8 @@
     http://openicf.forgerock.org
 #>
 
+$attrUtil = [Org.IdentityConnectors.Framework.Common.Objects.ConnectorAttributeUtil]
+
 # Always put code in try/catch statement and make sure exceptions are rethrown to connector
 try
 {
@@ -60,18 +62,160 @@ if ($Connector.Operation -eq "UPDATE")
 {
 	switch ($Connector.ObjectClass.Type)
 	{
-		"__ACCOUNT__" {$Connector.Result.Uid = "123"}
-		"__GROUP__" {throw "Unsupported operation"}
-		"__ALL__" {Write-Error "ICF Framework MUST REJECT this"; break}
+		"__ACCOUNT__" 
+		{
+			$current = Get-ConnectorObjectCache $Connector.ObjectClass $Connector.Uid
+			if($current -ne $null)
+			{
+				$cobld = New-Object Org.IdentityConnectors.Framework.Common.Objects.ConnectorObjectBuilder
+				$cobld.setUid($Connector.Uid)
+				$cobld.ObjectClass = $Connector.ObjectClass
+				$cobld.AddAttributes($attrUtil::FilterUid($current.First.GetAttributes()))
+				
+				foreach($a in $Connector.Attributes)
+				{
+					if($a.Is("__NAME__"))
+					{
+						if(($a.Value -eq $null) -or ($a.Value.Count -eq 0))
+						{
+							throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting non empty value")
+						}
+						elseif($a.Value.Count -gt 1) 
+						{
+							throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting single value")
+						}
+						elseif($attrUtil::GetSingleValue($a).GetType().Equals([string]))
+						{
+							$cobld.setName($attrUtil::GetSingleValue($a))
+						}
+						else
+						{
+							throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting String value")
+						}
+					}
+					elseif($a.Is("userName"))
+					{
+						if(($a.Value -eq $null) -or ($a.Value.Count -eq 0))
+						{
+							throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting non empty value")
+						}
+						elseif($a.Value.Count -gt 1) 
+						{
+							throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting single value")
+						}
+						elseif($attrUtil::GetSingleValue($a).GetType().Equals([string]))
+						{
+							$cobld.AddAttribute("userName",$attrUtil::GetStringValue($a))
+						}
+						else
+						{
+							throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting String value")
+						}
+					}
+					elseif($a.Is("email"))
+					{
+						if(($a.Value -eq $null) -or ($a.Value.Count -eq 0))
+						{
+							throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting non null value")
+						}
+						else
+						{
+							foreach($object in $a.Value)
+							{
+								if(!$object.GetType().Equals([string]))
+								{
+									throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting String value")
+								}
+							}
+							$cobld.AddAttribute($a)
+						}
+					}
+					elseif($a.Is("active"))
+					{
+						if(($a.Value -eq $null) -or ($a.Value.Count -eq 0))
+						{
+							throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting non empty value")
+						}
+						elseif($a.Value.Count -gt 1) 
+						{
+							throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting single value")
+						}
+						elseif($attrUtil::GetSingleValue($a).GetType().Equals([bool]))
+						{
+							$cobld.AddAttribute("active", $attrUtil::GetBooleanValue($a))
+						}
+						else
+						{
+							throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting Boolean value")
+						}
+					}
+					elseif($a.Is("createDate"))
+					{
+						throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Try update non modifiable attribute")
+					}
+					elseif($a.Is("lastModified"))
+					{
+						throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Try update non modifiable attribute")
+					}
+					elseif($a.Is("passwordHistory"))
+					{
+						throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Try update non modifiable attribute")
+					}
+					elseif($a.Is("surName"))
+					{
+						if(($a.Value -eq $null) -or ($a.Value.Count -eq 0))
+						{
+							$cobld.AddAttribute("surName")
+						}
+						elseif($a.Value.Count -gt 1) 
+						{
+							throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting single value")
+						}
+						elseif($attrUtil::GetSingleValue($a).GetType().Equals([string]))
+						{
+							$cobld.AddAttribute("surName",$attrUtil::GetStringValue($a))
+						}
+						else
+						{
+							throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.InvalidAttributeValueException("Expecting String value")
+						}
+					}
+					else
+					{
+						$cobld.AddAttribute($a)
+					}
+				}
+				$now = (Get-Date).ToString()
+				$cobld.AddAttribute("lastModified", $now)
+				$Connector.Result.Uid = Set-ConnectorObjectCache $cobld.Build()
+			}
+			else
+			{
+				throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.UnknownUidException($Connector.Uid, $Connector.ObjectClass)
+			}
+		}
+		"__GROUP__" {$Connector.Result.Uid = $Connector.Uid}
+		"__ALL__" {Write-Error "ICF Framework MUST REJECT this"}
 		"__TEST__" 
 		{
 			$Connector.Result.Uid = Exception-Test -Operation $Connector.Operation -ObjectClass $Connector.ObjectClass -Uid $Connector.Uid -Options $Connector.Options
 		}
+		"__SAMPLE"
+		{
+			throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type) is not supported")
+		}
 		default 
 		{
-			throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")
+			throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type) is not supported")
 		}
 	}
+}
+elseif(($Connector.Operation -eq "ADD_ATTRIBUTE_VALUES") -or ($Connector.Operation -eq "REMOVE_ATTRIBUTE_VALUES"))
+{
+	throw New-Object System.NotSupportedException
+}
+else{
+	throw new Org.IdentityConnectors.Framework.Common.Exceptions.ConnectorException("updateScript can not handle operation: $($Connector.Operation)")
 }
 }
 catch #Rethrow the original exception

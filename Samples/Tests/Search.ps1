@@ -37,9 +37,7 @@
 	 - <prefix>.Query: a handler to the native query
 
 .RETURNS
-	A list of Maps. Each map describing one row.
-	!!!! Each Map must contain a '__UID__' and '__NAME__' attribute.
-	This is required to build a ConnectorObject.
+	Use <prefix>.Result.Complete() and <prefix>.Result.Process() method
   
 .NOTES  
     File Name      : Search.ps1  
@@ -154,7 +152,7 @@ try
 			{
 				$uid = "UID{0:d2}" -f $i
 				$id = "TEST{0:d2}" -f $i
-				$entry = @{__UID__= $uid; __NAME__= $id}
+				$entry = @{"__UID__"= $uid; "__NAME__"= $id}
 				foreach($key in $template.Keys)
 				{
 					if($attrToGet.ContainsKey($key))
@@ -169,13 +167,26 @@ try
 				}
 			}
 		}
+		"__SAMPLE__"
+		{
+			$entry1 = @{"__UID__" = "12"; "__NAME__" = "12"; "surName" = "Foo";
+						"lastName" = "Bar"; "groups" = @("Group1","Group2"); "active" = $true
+						}
+			$Connector.Result.Process($entry1)
+			$entry2 = @{"__UID__" = "13"; "__NAME__" = "13"; "surName" = "Foo"; 
+						"lastName" = "Bar"; "groups" = @("Group1","Group2"); "active" = $true;
+						"emails" = @{"address" = "foo@example.com"; "type" = "home"; "customeType" = ""; "primary" = $true}
+						}
+			$Connector.Result.Process($entry2)
+			$Conector.Result.Complete
+		}
 		"__EMPTY__" 
 		{
-			return New-Object Org.IdentityConnectors.Framework.Common.Objects.SearchResult
+			$Connector.Result.Complete
 		}
 		default
 		{	
-			throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.objectClass.Type)")
+			throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type) is not supported")
 		}
 	}
 }

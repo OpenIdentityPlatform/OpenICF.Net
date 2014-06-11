@@ -142,7 +142,7 @@ namespace MsPowerShellTestModule
             if (
                 Double.TryParse(Convert.ToString(v1, CultureInfo.InvariantCulture), NumberStyles.Any,
                     NumberFormatInfo.InvariantInfo, out n1) &&
-                Double.TryParse(Convert.ToString(v1, CultureInfo.InvariantCulture), NumberStyles.Any,
+                Double.TryParse(Convert.ToString(v2, CultureInfo.InvariantCulture), NumberStyles.Any,
                     NumberFormatInfo.InvariantInfo, out n2))
             {
                 return Math.Sign(n1.CompareTo(n2));
@@ -223,7 +223,7 @@ namespace MsPowerShellTestModule
                     throw new PreconditionRequiredException();
                 }
                 Pair<ConnectorObject, DateTime> item = Pair<ConnectorObject, DateTime>.Of(connectorObject, DateTime.Now);
-                if (storage.TryUpdate(connectorObject.Uid.GetUidValue(), item, old))
+                if (!storage.TryUpdate(connectorObject.Uid.GetUidValue(), item, old))
                 {
                     throw new PreconditionFailedException();
                 }
@@ -274,7 +274,19 @@ namespace MsPowerShellTestModule
 
             public int Compare(ConnectorObject r1, ConnectorObject r2)
             {
-                return _sortKeys.Select(sortKey => Compare0(r1, r2, sortKey)).FirstOrDefault(result => result != 0);
+                //var sel = _sortKeys.Select(sortKey => Compare0(r1, r2, sortKey));
+                //var f = sel.FirstOrDefault(result => result != 0);
+                //return f;
+
+                foreach (var sortkey in _sortKeys)
+                {
+                    var result = Compare0(r1, r2, sortkey);
+                    if (result != 0)
+                    {
+                        return result;
+                    }
+                }
+                return 0;
             }
 
 
