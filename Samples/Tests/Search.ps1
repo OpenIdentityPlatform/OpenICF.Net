@@ -58,7 +58,15 @@ try
 	{
 		"__ACCOUNT__"
 		{
-			$resultSet = Search-ConnectorObjectCache -ObjectClass $Connector.ObjectClass -Query $Connector.Query -SortKeys $Connector.Options.SortKeys
+			$resultSet = @()
+			if ($Connector.Query -ne $null)
+			{
+				$resultSet = Search-ConnectorObjectCache -ObjectClass $Connector.ObjectClass -Query $Connector.Query -SortKeys $Connector.Options.SortKeys
+			}
+			else
+			{
+				$resultSet = Search-ConnectorObjectCache -ObjectClass $Connector.ObjectClass -SortKeys $Connector.Options.SortKeys
+			}
 			
 			if ($Connector.Options.PageSize -ne $null)
 			{
@@ -100,7 +108,7 @@ try
 					
 					if($index -ge $pagedResultsOffset + $pageStartIndex)
 					{
-						if($Connector.Result.Process($entry))
+						if($Connector.Result.Process($entry) )
 						{
 							$handled++
 							$currentPagedResultsCookie = $entry.Name.GetNameValue()

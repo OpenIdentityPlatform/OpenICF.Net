@@ -73,18 +73,29 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             ((SearchResultsHandler)_handler).HandleResult(new SearchResult(cookie, pages));
         }
 
-        public Boolean Process(ConnectorObject result)
-        {
-            return _handler.Handle(result);
-        }
+        //public Boolean Process(ConnectorObject result)
+        //{
+        //    return _handler.Handle(result);
+        //}
 
-        public Boolean Process(Hashtable result)
+        public Boolean Process(Object result)
         {
+            if (result == null)
+            {
+                return true;
+            }
+
+            if (result is ConnectorObject)
+            {
+                return _handler.Handle(result as ConnectorObject);
+            }
+
             var cobld = new ConnectorObjectBuilder();
-            foreach (String key in result.Keys)
+            var res = result as Hashtable;
+            foreach (String key in res.Keys)
             {
                 var attrName = key;
-                var attrValue = result[key];
+                var attrValue = res[key];
                 if ("__UID__".Equals(attrName))
                 {
                     if (attrValue == null)

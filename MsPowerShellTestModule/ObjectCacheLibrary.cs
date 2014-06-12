@@ -60,7 +60,7 @@ namespace MsPowerShellTestModule
         [Parameter(Mandatory = true)]
         public ObjectClass ObjectClass;
 
-        [Parameter(Mandatory = true)]
+        [Parameter]
         public Filter Query;
 
         [Parameter]
