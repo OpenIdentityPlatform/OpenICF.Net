@@ -51,6 +51,7 @@
 
 #>
 
+$attrUtil = [Org.IdentityConnectors.Framework.Common.Objects.ConnectorAttributeUtil]
 # Always put code in try/catch statement and make sure exceptions are rethrown to connector
 try
 {
@@ -154,24 +155,52 @@ try
 					$attrToGet.Add($a,$true)
 				}
 			}
-			
-			$template = Get-ConnectorObjectTemplate
-			foreach($i in (0..9))
+			if ($Connector.Query -ne $null)
 			{
-				$uid = "UID{0:d2}" -f $i
-				$id = "TEST{0:d2}" -f $i
-				$entry = @{"__UID__"= $uid; "__NAME__"= $id}
-				foreach($key in $template.Keys)
+				if($Connector.Query.GetType().Equals([Org.IdentityConnectors.Framework.Common.Objects.Filters.EqualsFilter]))
 				{
-					if($attrToGet.ContainsKey($key))
+					#Let's assume this is exact query on UID
+					if($Connector.Query.GetAttribute().Name -eq "__UID__")
 					{
-						$entry.Add($key, $template[$key])
+						$attr = $Connector.Query.GetAttribute()
+						$uid = $attrUtil::GetSingleValue($attr)
+						
+						$template = Get-ConnectorObjectTemplate
+						$entry = @{"__UID__"= $uid; "__NAME__"= $uid}
+						foreach($key in $template.Keys)
+						{
+							if($attrToGet.ContainsKey($key))
+							{
+								$entry.Add($key, $template[$key])
+							}
+						}
+						if (!$Connector.Result.Process($entry))
+						{
+							break;
+						}
 					}
 				}
-				Write-Debug -Message "Processing $entry" 
-				if (!$Connector.Result.Process($entry))
+			}
+			else
+			{
+				$template = Get-ConnectorObjectTemplate
+				foreach($i in (0..9))
 				{
-					break;
+					$uid = "UID{0:d2}" -f $i
+					$id = "TEST{0:d2}" -f $i
+					$entry = @{"__UID__"= $uid; "__NAME__"= $id}
+					foreach($key in $template.Keys)
+					{
+						if($attrToGet.ContainsKey($key))
+						{
+							$entry.Add($key, $template[$key])
+						}
+					}
+					Write-Verbose -verbose "Processing $entry" 
+					if (!$Connector.Result.Process($entry))
+					{
+						break;
+					}
 				}
 			}
 		}
