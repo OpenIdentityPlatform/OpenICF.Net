@@ -54,4 +54,17 @@
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildProjectDirectory)\..\PowerShellConnectorBuild.Targets" />
+  <Target Name="CommonAfterBuild">
+    <ItemGroup>
+      <SourceFiles Include="$(MSBuildProjectDirectory)\..\Samples\Tests\*.ps*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SourceFiles)" DestinationFolder="$(OutputPath)" />
+    <ItemGroup>
+      <ZipFiles Include="$(OutputPath)\*.ps*;$(OutputPath)\*.dll" Exclude="*.pdb;*.zip" />
+    </ItemGroup>
+    <MakeDir Directories="$(CommonBuildDir)" Condition="!Exists('$(CommonBuildDir)')" />
+    <Zip Files="@(ZipFiles)" WorkingDirectory="$(OutputPath)"
+      ZipFileName="$(CommonBuildDir)\MsPowerShell.Scripts-$(Major).$(Minor).$(Build).$(Revision)-tests.zip"/>
+  </Target>
+
 </Project>
