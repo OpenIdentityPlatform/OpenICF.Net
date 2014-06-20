@@ -120,7 +120,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         { get; set; }
 
         [ConfigurationProperty(DisplayMessageKey = "display_Port", HelpMessageKey = "help_Port",
-            GroupMessageKey = "group_Port", Order = 19)]
+            GroupMessageKey = "group_PowerShell", Order = 19)]
         public String Port
         { get; set; }
 
@@ -130,7 +130,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         { get; set; }
 
         [ConfigurationProperty(DisplayMessageKey = "display_Password", HelpMessageKey = "help_Password",
-            GroupMessageKey = "group_PowerShell", Order = 14)]
+            GroupMessageKey = "group_PowerShell", Confidential  = true, Order = 14)]
         public GuardedString Password
         { get; set; }
 

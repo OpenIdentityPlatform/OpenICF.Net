@@ -84,14 +84,14 @@ if ($Connector.Operation -eq "SCHEMA")
 	$ocib.ObjectType = "__ACCOUNT__"
 	$ocib.AddAttributeInfo([Org.IdentityConnectors.Framework.Common.Objects.OperationalAttributeInfos]::PASSWORD)
 	$ocib.AddAttributeInfo([Org.IdentityConnectors.Framework.Common.Objects.PredefinedAttributeInfos]::DESCRIPTION)
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("groups", [string]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("groups", [string]).SetMultiValued($TRUE).Build())
 
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("userName", [string]).SetRequired($TRUE).Build())
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("email").SetRequired($TRUE).SetMultiValue($TRUE).Build())	
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("email").SetRequired($TRUE).SetMultiValued($TRUE).Build())	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("__ENABLE__", [boolean]))
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("createDate").SetCreatable($FALSE).SetUpdateable($FALSE).Build())
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("lastModified", [long]).SetCreatable($FALSE).SetUpdateable($FALSE).SetReturnedByDefault($FALSE).Build())
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("passwordHistory", [string]).SetMultiValue($TRUE).SetReadable($FALSE).SetUpdateable($FALSE).SetReturnedByDefault($FALSE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("passwordHistory", [string]).SetMultiValued($TRUE).SetReadable($FALSE).SetUpdateable($FALSE).SetReturnedByDefault($FALSE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("firstname"))
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("sn"))
@@ -105,8 +105,8 @@ if ($Connector.Operation -eq "SCHEMA")
 	$ocib.ObjectType = "__GROUP__"
 
 	$ocib.AddAttributeInfo([Org.IdentityConnectors.Framework.Common.Objects.PredefinedAttributeInfos]::DESCRIPTION)
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("cn", [string]).SetRequired($TRUE).SetMultiValue($TRUE).Build())	
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("member", [string]).SetRequired($TRUE).SetMultiValue($TRUE).Build())	
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("cn", [string]).SetRequired($TRUE).SetMultiValued($TRUE).Build())	
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("member", [string]).SetRequired($TRUE).SetMultiValued($TRUE).Build())	
 	$Connector.SchemaBuilder.DefineObjectClass($ocib.Build(), ($CreateOp, $DeleteOp, $SearchOp, $UpdateAttributeValuesOp, $UpdateOp))
 	
 	###########################
@@ -117,67 +117,67 @@ if ($Connector.Operation -eq "SCHEMA")
 	
 	# All supported attribute types
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeString",[string]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeStringMultivalue",[string]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeStringMultivalue",[string]).SetMultiValued($TRUE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributelongp",[long]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributelongpMultivalue",[long]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributelongpMultivalue",[long]).SetMultiValued($TRUE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeLong",[long]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeLongMultivalue",[long]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeLongMultivalue",[long]).SetMultiValued($TRUE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributechar",[char]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributecharMultivalue",[char]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributecharMultivalue",[char]).SetMultiValued($TRUE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeCharacter",[char]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeCharacterMultivalue",[char]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeCharacterMultivalue",[char]).SetMultiValued($TRUE).Build())
 
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributedoublep",[double]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributedoublepMultivalue",[double]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributedoublepMultivalue",[double]).SetMultiValued($TRUE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeDouble",[double]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeDoubleMultivalue",[double]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeDoubleMultivalue",[double]).SetMultiValued($TRUE).Build())
 
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributefloatp",[float]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributefloatpMultivalue",[float]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributefloatpMultivalue",[float]).SetMultiValued($TRUE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeFloat",[float]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeFloatMultivalue",[float]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeFloatMultivalue",[float]).SetMultiValued($TRUE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeint",[int]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeintMultivalue",[int]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeintMultivalue",[int]).SetMultiValued($TRUE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeInteger",[int]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeIntegerMultivalue",[int]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeIntegerMultivalue",[int]).SetMultiValued($TRUE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributebooleanp",[bool]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributebooleanpMultivalue",[bool]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributebooleanpMultivalue",[bool]).SetMultiValued($TRUE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeBoolean",[bool]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeBooleanMultivalue",[bool]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeBooleanMultivalue",[bool]).SetMultiValued($TRUE).Build())
 
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributebytep",[byte]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributebytepMultivalue",[byte]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributebytepMultivalue",[byte]).SetMultiValued($TRUE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeByte",[byte]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeByteMultivalued",[byte]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeByteMultivalued",[byte]).SetMultiValued($TRUE).Build())
 
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeByteArray",[byte[]]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeByteArrayMultivalue",[byte[]]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeByteArrayMultivalue",[byte[]]).SetMultiValued($TRUE).Build())
 
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeBigDecimal",[Org.IdentityConnectors.Framework.Common.Objects.BigDecimal]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeBigDecimalMultivalue",[Org.IdentityConnectors.Framework.Common.Objects.BigDecimal]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeBigDecimalMultivalue",[Org.IdentityConnectors.Framework.Common.Objects.BigDecimal]).SetMultiValued($TRUE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeBigInteger",[Org.IdentityConnectors.Framework.Common.Objects.BigInteger]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeBigIntegerMultivalue",[Org.IdentityConnectors.Framework.Common.Objects.BigInteger]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeBigIntegerMultivalue",[Org.IdentityConnectors.Framework.Common.Objects.BigInteger]).SetMultiValued($TRUE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeGuardedByteArray",[Org.IdentityConnectors.Common.Security.GuardedByteArray]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeGuardedByteArrayMultivalue",[Org.IdentityConnectors.Common.Security.GuardedByteArray]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeGuardedByteArrayMultivalue",[Org.IdentityConnectors.Common.Security.GuardedByteArray]).SetMultiValued($TRUE).Build())
 	
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeGuardedString",[Org.IdentityConnectors.Common.Security.GuardedString]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeGuardedStringMultivalue",[Org.IdentityConnectors.Common.Security.GuardedString]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeGuardedStringMultivalue",[Org.IdentityConnectors.Common.Security.GuardedString]).SetMultiValued($TRUE).Build())
 
 	$ocib.AddAttributeInfo($AttributeInfoBuilder::Build("attributeDictionary",[System.Collections.Generic.Dictionary[object, object]]))
-	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeDictionaryMultivalue",[System.Collections.Generic.Dictionary[object, object]]).SetMultiValue($TRUE).Build())
+	$ocib.AddAttributeInfo($AttributeInfoBuilder::Define("attributeDictionaryMultivalue",[System.Collections.Generic.Dictionary[object, object]]).SetMultiValued($TRUE).Build())
 			
 	$Connector.SchemaBuilder.DefineObjectClass($ocib.Build(), ($CreateOp, $DeleteOp, $SearchOp, $UpdateAttributeValuesOp, $UpdateOp))
 	
