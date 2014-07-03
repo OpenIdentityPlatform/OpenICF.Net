@@ -1,4 +1,4 @@
-# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+﻿# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 # Copyright (c) 2014 ForgeRock AS. All Rights Reserved
 #
@@ -200,7 +200,7 @@ if ($Connector.Operation -eq "UPDATE")
 		{
 			$Connector.Result.Uid = Exception-Test -Operation $Connector.Operation -ObjectClass $Connector.ObjectClass -Uid $Connector.Uid -Options $Connector.Options
 		}
-		"__SAMPLE"
+		"__SAMPLE__"
 		{
 			throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type) is not supported")
 		}

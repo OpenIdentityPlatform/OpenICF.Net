@@ -151,9 +151,11 @@ Function Get-ConnectorObjectTemplate {
 	$value["attributebytep"] = 48 -as [byte]
 	$value["attributebytepMultivalue"] = ((49 -as [byte]), (50 -as [byte])) -as [byte[]]
 	$value["attributeByte"] = 51 -as [Byte]
-	$value["attributeByteMultivalue"] = ((52 -as [Byte]), (53 -as [Byte])) -as [Byte[]]
+	$value["attributeByteMultivalue"] = ((52 -as [Byte]), (53 -as [Byte]))
 	$value["attributeByteArray"] = ((1 -as [byte]), (2 -as [byte])) -as [byte[]]
-	$value["attributeByteArrayMultivalue"] = (((1 -as [byte]), (2 -as [byte])), ((1 -as [byte]), (2 -as [byte]))) -as [byte[][]]
+	$a = ((1 -as [byte]), (2 -as [byte])) -as [byte[]]
+	$b = ((3 -as [byte]), (4 -as [byte])) -as [byte[]]
+	$value["attributeByteArrayMultivalue"] = ($a, $b)
 	
 	$bigInt1 = New-Object Org.IdentityConnectors.Framework.Common.Objects.BigInteger("1")
 	$bigInt0 = New-Object Org.IdentityConnectors.Framework.Common.Objects.BigInteger("0")
