@@ -52,9 +52,10 @@
 # Always put code in try/catch statement and make sure exceptions are rethrown to connector
 try
 {
+ Write-Verbose -verbose "This is Test Script"
  if ($Connector.Operation -eq "TEST")
  {
-	Write-Verbose -verbose "TEST SUCCESS"
+	throw New-Object System.MissingFieldException("Test Failed")
 }
  else
  {

@@ -35,6 +35,7 @@
 	- <prefix>.ObjectClass: an ObjectClass describing the Object class (__ACCOUNT__ / __GROUP__ / other)
 	- <prefix>.Operation: an OperationType describing the action ("SEARCH" here)
 	- <prefix>.Options: a handler to the OperationOptions Map
+	- <prefix>.Token: The sync token value
 
 .RETURNS
 	if action = "GET_LATEST_SYNC_TOKEN", it must return an object representing the last known
@@ -93,39 +94,61 @@ try
 	{
 		if (($Connector.ObjectClass.Type -eq "__ACCOUNT__") -or ($Connector.ObjectClass.Type -eq "__TEST__"))
 		{
+			$template = Get-ConnectorObjectTemplate
 			switch($Connector.Token)
 			{
 				0 # CREATE
 				{
-					$object = @{"__NAME__" = "Foo"; "sn" = "Foo"; "mail" = "foo@example.com"}
+					$object = @{"__NAME__" = "Foo"; "__UID__" = "001"}
+					foreach($key in $template.Keys)
+					{
+						$object.Add($key, $template[$key])
+					}
 					$result = @{"SyncToken" = 1; "DeltaType" = "CREATE"; "Uid" = "001"; "Object" = $object}
 					$Connector.Result.Process($result)
 					$Connector.Result.Complete(1)
 				}
 				1 # UPDATE
 				{
-					$object = @{"__NAME__"= "Foo"; "sn"= "Foo"; "mail"= "foo@example2.com"}
+					$object = @{"__NAME__"= "Foo"; "__UID__" = "001"}
+					foreach($key in $template.Keys)
+					{
+						$object.Add($key, $template[$key])
+					}
 					$result = @{"SyncToken" = 2; "DeltaType" = "UPDATE"; "Uid" = "001"; "Object" = $object}
 					$Connector.Result.Process($result)
 					$Connector.Result.Complete(2)
 				}
 				2 # CREATE_OR_UPDATE
 				{
-					$object = @{"__NAME__"= "Foo"; "sn"= "Foo"; "mail"= "foo@example3.com"}
+					$object = @{"__NAME__"= "Foo"; "__UID__" = "001"}
+					foreach($key in $template.Keys)
+					{
+						$object.Add($key, $template[$key])
+					}
 					$result = @{"SyncToken" = 3; "DeltaType" = "CREATE_OR_UPDATE"; "Uid" = "001"; "Object" = $object} 
 					$Connector.Result.Process($result)
 					$Connector.Result.Complete(3)
 				}
 				3 # RENAME
 				{
-					$object = @{"__NAME__"= "Foo"; "sn"= "Foo"; "mail"= "foo@example3.com"}
+					$object = @{"__NAME__"= "Foo"; "__UID__" = "002"}
+					foreach($key in $template.Keys)
+					{
+						$object.Add($key, $template[$key])
+					}
 					$result = @{"SyncToken" = 4; "DeltaType" = "UPDATE"; "PreviousUid" = "001"; "Uid" = "002"; "Object" = $object} 
 					$Connector.Result.Process($result)
 					$Connector.Result.Complete(4)
 				}
 				4 # DELETE
 				{
-					$result = @{"SyncToken" = 5; "DeltaType" = "DELETE"; "Uid" = "001"} 
+					$object = @{"__NAME__"= "Foo"; "__UID__" = "002"}
+					foreach($key in $template.Keys)
+					{
+						$object.Add($key, $template[$key])
+					}
+					$result = @{"SyncToken" = 5; "DeltaType" = "DELETE"; "Uid" = "002"; "Object" = $object} 
 					$Connector.Result.Process($result)
 					$Connector.Result.Complete(5)
 				}
