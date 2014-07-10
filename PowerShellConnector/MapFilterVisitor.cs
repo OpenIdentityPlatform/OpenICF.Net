@@ -52,7 +52,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 
         public Dictionary<string, object> VisitContainsFilter(Hashtable p, ContainsFilter filter)
         {
-            return CreateMap("LESSTHANOREQUAL", filter.GetName(), filter.GetValue());
+            return CreateMap("CONTAINS", filter.GetName(), filter.GetValue());
         }
 
         public Dictionary<string, object> VisitContainsAllValuesFilter(Hashtable p, ContainsAllValuesFilter filter)
