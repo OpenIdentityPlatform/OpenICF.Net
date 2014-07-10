@@ -23,6 +23,7 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -483,8 +484,36 @@ namespace MSPowerShellConnectorTests
         [Category("Search")]
         public void TestSearch()
         {
-            var co = GetFacade().GetObject(Test, new Uid("1"), null);
+            var co = GetFacade().GetObject(Test, new Uid("UID01"), null);
             Assert.IsNotNull(co);
+        }
+
+        [Test]
+        [Category("Search")]
+        public void TestSearchByteAttributes()
+        {
+            OperationOptionsBuilder builder = new OperationOptionsBuilder();
+            builder.AttributesToGet = new[] { "attributeByte", "attributeByteMultivalue", "attributeByteArray", "attributeByteArrayMultivalue" };
+            var co = GetFacade().GetObject(Test, new Uid("UID01"), builder.Build());
+            Assert.IsNotNull(co);
+            
+            IList<Object> value = co.GetAttributeByName("attributeByte").Value;
+            Assert.AreEqual(1, value.Count);
+            Assert.IsInstanceOf(typeof(byte), value[0]);
+
+            value = co.GetAttributeByName("attributeByteMultivalue").Value;
+            Assert.AreEqual(2, value.Count);
+            Assert.IsInstanceOf(typeof(byte), value[0]);
+            Assert.IsInstanceOf(typeof(byte), value[1]);
+
+            value = co.GetAttributeByName("attributeByteArray").Value;
+            Assert.AreEqual(1, value.Count);
+            Assert.IsInstanceOf(typeof(byte[]), value[0]);
+
+            value = co.GetAttributeByName("attributeByteArrayMultivalue").Value;
+            Assert.AreEqual(2, value.Count);
+            Assert.IsInstanceOf(typeof(byte[]), value[0]);
+            Assert.IsInstanceOf(typeof(byte[]), value[1]);
         }
 
         [Test]
@@ -492,7 +521,7 @@ namespace MSPowerShellConnectorTests
         public void TestSearchAttributes()
         {
             OperationOptionsBuilder builder = new OperationOptionsBuilder();
-            builder.AttributesToGet = new[] { "attributeString", "attributeMap" };
+            builder.AttributesToGet = new[] { "attributeString", "attributeMap"};
             GetFacade().Search(Test, null, new ResultsHandler
             {
                 Handle = connectorObject =>
@@ -561,17 +590,17 @@ namespace MSPowerShellConnectorTests
         // End of Groovy from
 
         /*FilterBuilder.EqualTo(ConnectorAttributeBuilder.Build(Name.NAME, "Foo"))*/
-        //[Test]
-        //[Category("Search")]
-        //public void TestNullQuery()
-        //{
-        //    var result = new List<ConnectorObject>();
-        //    GetFacade().Search(ObjectClass.ACCOUNT, null, new ResultsHandler()
-        //    {
-        //        Handle = connectorObject => { result.Add(connectorObject); return true; }
-        //    }, null);
-        //    Assert.AreEqual(2, result.Count);
-        //}
+        [Test]
+        [Category("Search")]
+        public void TestNullQuery()
+        {
+            var result = new List<ConnectorObject>();
+            GetFacade().Search(Test, null, new ResultsHandler()
+            {
+                Handle = connectorObject => { result.Add(connectorObject); return true; }
+            }, null);
+            Assert.AreEqual(10, result.Count);
+        }
 
         //[Test]
         //[Category("Search")]
@@ -636,7 +665,6 @@ namespace MSPowerShellConnectorTests
         public void TestSyncAccount(ObjectClass objectClass)
         {
             var result = new List<SyncDelta>();
-
             SyncToken lastToken = GetFacade().Sync(objectClass, new SyncToken(0), new SyncResultsHandler()
                 {
                     Handle = delta =>
@@ -650,7 +678,7 @@ namespace MSPowerShellConnectorTests
             SyncDelta sdelta = result[0];
             result.RemoveAt(0);
             Assert.AreEqual(SyncDeltaType.CREATE, sdelta.DeltaType);
-            Assert.AreEqual(4, sdelta.Object.GetAttributes().Count);
+            Assert.AreEqual(44, sdelta.Object.GetAttributes().Count);
 
             lastToken = GetFacade().Sync(objectClass, lastToken, new SyncResultsHandler()
             {
@@ -665,7 +693,7 @@ namespace MSPowerShellConnectorTests
             sdelta = result[0];
             result.RemoveAt(0);
             Assert.AreEqual(SyncDeltaType.UPDATE, sdelta.DeltaType);
-            Assert.AreEqual(4, sdelta.Object.GetAttributes().Count);
+            Assert.AreEqual(44, sdelta.Object.GetAttributes().Count);
 
             lastToken = GetFacade().Sync(objectClass, lastToken, new SyncResultsHandler()
             {
@@ -680,7 +708,7 @@ namespace MSPowerShellConnectorTests
             sdelta = result[0];
             result.RemoveAt(0);
             Assert.AreEqual(SyncDeltaType.CREATE_OR_UPDATE, sdelta.DeltaType);
-            Assert.AreEqual(4, sdelta.Object.GetAttributes().Count);
+            Assert.AreEqual(44, sdelta.Object.GetAttributes().Count);
 
             lastToken = GetFacade().Sync(objectClass, lastToken, new SyncResultsHandler()
             {
@@ -695,7 +723,7 @@ namespace MSPowerShellConnectorTests
             sdelta = result[0];
             result.RemoveAt(0);
             Assert.AreEqual(SyncDeltaType.UPDATE, sdelta.DeltaType);
-            Assert.AreEqual(4, sdelta.Object.GetAttributes().Count);
+            Assert.AreEqual(44, sdelta.Object.GetAttributes().Count);
             Assert.AreEqual("001", sdelta.PreviousUid.GetUidValue());
 
             lastToken = GetFacade().Sync(objectClass, lastToken, new SyncResultsHandler()
@@ -917,6 +945,7 @@ namespace MSPowerShellConnectorTests
 
         [Test]
         [Category("test")]
+        [ExpectedException(typeof(MissingFieldException))]
         public void TestTest()
         {
             GetFacade().Test();

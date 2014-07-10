@@ -125,7 +125,7 @@ Function Get-ConnectorObjectTemplate {
 	$value["attributeString"] = "retipipiter"
 	$value["attributeStringMultivalue"] = ("value1", "value2")
 	$value["attributelongp"] = 111 -as [long]
-	$value["attributelongpMultivalue"] = (121 -as [long], 131 -as [long])
+	$value["attributelongpMultivalue"] = ((121 -as [long]), (131 -as [long]))
 	$value["attributeLong"] = 14 -as [long]
 	$value["attributeLongMultivalue"] = ((15 -as [long]), (16 -as [long]))
 	$value["attributechar"] = 'a' -as [char]
@@ -162,31 +162,34 @@ Function Get-ConnectorObjectTemplate {
 	$bigInt10 = New-Object Org.IdentityConnectors.Framework.Common.Objects.BigInteger("10")
 	
 	$value["attributeBigInteger"] = $bigInt1
-	$value["attributeBigIntegerMultivalue"] = ($bigInt0, $bigInt10) -as [Org.IdentityConnectors.Framework.Common.Objects.BigInteger[]]
+	$value["attributeBigIntegerMultivalue"] = ($bigInt0, $bigInt10)
 	
 	$bigDec1 = New-Object Org.IdentityConnectors.Framework.Common.Objects.BigDecimal($bigInt1,0)
 	$bigDec0 = New-Object Org.IdentityConnectors.Framework.Common.Objects.BigDecimal($bigInt0,0)
 	$bigDec10 = New-Object Org.IdentityConnectors.Framework.Common.Objects.BigDecimal($bigInt10,0)
 	
 	$value["attributeBigDecimal"] = $bigDec1 -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal]
-	$value["attributeBigDecimalMultivalue"] = (($bigDec0 -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal]), ($bigDec0 -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal])) -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal[]]
+	$value["attributeBigDecimalMultivalue"] = (($bigDec0 -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal]), ($bigDec0 -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal]))
 	
-	#$gba = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray
-	#[System.Text.Encoding]::UTF8.GetBytes("array") | ForEach-Object($gba.AppendByte($_))
-	#$gba1 = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray
-	#[System.Text.Encoding]::UTF8.GetBytes("item1") | ForEach-Object($gba.AppendByte($_))
-	#$gba2 = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray
-	#[System.Text.Encoding]::UTF8.GetBytes("item1") | ForEach-Object($gba.AppendByte($_))
+	$gba = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray
+	[System.Text.Encoding]::UTF8.GetBytes("array") | ForEach-Object($gba.AppendByte($_))
+	$gba1 = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray
+	[System.Text.Encoding]::UTF8.GetBytes("item1") | ForEach-Object($gba.AppendByte($_))
+	$gba2 = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray
+	[System.Text.Encoding]::UTF8.GetBytes("item1") | ForEach-Object($gba.AppendByte($_))
 	
-	#$value["attributeGuardedByteArray"] = $gba
-	#$value["attributeGuardedByteArrayMultivalue"] = ($gba1, $gba2) -as [Org.IdentityConnectors.Common.Security.GuardedByteArray[]]
+	$value["attributeGuardedByteArray"] = $gba
+	$value["attributeGuardedByteArrayMultivalue"] = ($gba1, $gba2)
 	
-	#$value["attributeGuardedString"] = New-Object Org.IdentityConnectors.Common.Security.GuardedString("secret".ToCharArray())
+	$ssecret = ConvertTo-SecureString -String "secret" -AsPlainText -Force
+	$ssecret1 = ConvertTo-SecureString -String "secret1" -AsPlainText -Force
+	$ssecret2 = ConvertTo-SecureString -String "secret2" -AsPlainText -Force
+	$value["attributeGuardedString"] = New-Object Org.IdentityConnectors.Common.Security.GuardedString($ssecretcret)
 	
-	#$gs1 = New-Object Org.IdentityConnectors.Common.Security.GuardedString("secret1".ToCharArray())
-	#$gs2 = New-Object Org.IdentityConnectors.Common.Security.GuardedString("secret2".ToCharArray())
+	$gs1 = New-Object Org.IdentityConnectors.Common.Security.GuardedString($ssecret1)
+	$gs2 = New-Object Org.IdentityConnectors.Common.Security.GuardedString($ssecret2)
 	
-	#$value["attributeGuardedStringMultivalue"] = ($gs1, $gs2) -as [Org.IdentityConnectors.Common.Security.GuardedString[]]
+	$value["attributeGuardedStringMultivalue"] = ($gs1, $gs2)
 	
 	$value["attributeMap"] = @{"string" = "String";
 								"number" = 42;
@@ -209,7 +212,7 @@ Function Get-ConnectorObjectTemplate {
 								"nullValue" = $null;
 								"collection" = @("item1", "item2");
 								"object" = @{"key1" = "value1"; "key2" = "value2"}
-								}) -as [hashtable[]]
+								})
 	
 	return $value
 }

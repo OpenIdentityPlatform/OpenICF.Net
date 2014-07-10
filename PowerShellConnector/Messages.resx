@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="connector_displayName" xml:space="preserve">
-    <value>Microsoft PowerShell Connector</value>
+    <value>PowerShell Connector </value>
   </data>
   <data name="MESSAGE_OBJECT_CLASS___ACCOUNT__" xml:space="preserve">
     <value>User</value>
@@ -129,7 +129,7 @@
   <data name="group_OperationScripts" xml:space="preserve">
     <value>Operation Script Files</value>
   </data>
-  <data name="dispaly_SchemaScriptFileName" xml:space="preserve">
+  <data name="display_SchemaScriptFileName" xml:space="preserve">
     <value>Schema Script filename</value>
   </data>
   <data name="display_AuthenticateScriptFileName" xml:space="preserve">
@@ -190,36 +190,36 @@
     <value>The name of the file used to perform the UPDATE operation.</value>
   </data>
   <data name="display_NameAttributeName" xml:space="preserve">
-    <value />
+    <value>Name to use for __NAME__ in Query Filter</value>
   </data>
   <data name="display_QueryFilterType" xml:space="preserve">
-    <value />
+    <value>Format of the query filter</value>
   </data>
   <data name="display_SubstituteUidAndNameInQueryFilter" xml:space="preserve">
-    <value />
+    <value>Substitute __UID__ and __NAME__ in Query Filter</value>
   </data>
   <data name="display_UidAttributeName" xml:space="preserve">
-    <value />
+    <value>Name to use for __UID__ in Query Filter</value>
   </data>
   <data name="display_VariablesPrefix" xml:space="preserve">
-    <value />
+    <value>Connector variables prefix</value>
   </data>
   <data name="group_PowerShell" xml:space="preserve">
     <value>PowerShell Runspace</value>
   </data>
   <data name="help_NameAttributeName" xml:space="preserve">
-    <value />
+    <value>Name  attribute name (__NAME__) can be replaced in query filter by a more convenient alias</value>
   </data>
   <data name="help_QueryFilterType" xml:space="preserve">
-    <value />
+    <value>QueryFilterType must be either "Native"|"Map"|"Ldap"|"AdPsModule". Defaults to "Map"</value>
   </data>
   <data name="help_SubstituteUidAndNameInQueryFilter" xml:space="preserve">
-    <value />
+    <value>Define if __UID__ and __NAME__ should be replaced by the value defined in NameAttributeName and UidAttributeName in the Queryfilter</value>
   </data>
   <data name="help_UidAttributeName" xml:space="preserve">
-    <value />
+    <value>Uid attribute name (__UID__) can be replaced in query filter by a more convenient alias</value>
   </data>
   <data name="help_VariablesPrefix" xml:space="preserve">
-    <value />
+    <value>Prefix for all the variables inject in the scripts by the connector. Defaults to "Connector". Variables are then accessed this way: $Connector.&lt;variable_name&gt;</value>
   </data>
 </root>

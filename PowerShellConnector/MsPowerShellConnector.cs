@@ -60,7 +60,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                      MessageCatalogPaths = new[] { "Org.ForgeRock.OpenICF.Connectors.MsPowerShell.Messages" }
                      )]
     public class MsPowerShellConnector : PoolableConnector, TestOp, SearchOp<Filter>,
-         CreateOp, UpdateOp, DeleteOp, SyncOp, AuthenticateOp, ResolveUsernameOp, SchemaOp, ScriptOnConnectorOp, ScriptOnResourceOp
+         CreateOp, UpdateOp, DeleteOp, SyncOp, AuthenticateOp, ResolveUsernameOp, SchemaOp, ScriptOnConnectorOp
     {
         protected static String Username = "Username";
         protected static String Password = "Password";
@@ -606,38 +606,6 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 
             return ExecuteScript(request.ScriptText, CreateBinding(arguments, OperationType.RUNSCRIPTONCONNECTOR, null, null, null, options));
         }
-        #endregion
-
-        #region ScriptOnResourceOp members
-
-        public object RunScriptOnResource(ScriptContext request, OperationOptions options)
-        {
-            //Trace.TraceInformation("Invoke RunScriptOnResource");
-
-            //try
-            //{
-            //    var result = ExecuteScriptOnResource(request, options);
-            //    Trace.TraceInformation("RunScriptOnResource ok");
-            //    return result;
-            //}
-            //catch (Exception e)
-            //{
-            //    if (e.InnerException != null)
-            //    {
-            //        throw e.InnerException;
-            //    }
-            //    throw;
-            //}
-            throw new NotImplementedException("RunScriptOnResource not implemented");
-        }
-
-        protected Object ExecuteScriptOnResource(ScriptContext request, OperationOptions options)
-        {
-            return 0;
-        }
-
-
-
         #endregion
 
         #region protected members

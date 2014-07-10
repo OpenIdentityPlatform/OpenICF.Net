@@ -1,4 +1,4 @@
-# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+﻿# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 # Copyright (c) 2014 ForgeRock AS. All Rights Reserved
 #
@@ -147,6 +147,7 @@ try
 		}
 		"__TEST__"
 		{
+		#write-verbose -verbose ("Query type {0}" -f (Get-ConnectorQueryType $Connector.Query))
 			$attrToGet = @{}
 			if($Connector.Options.AttributesToGet -ne $null)
 			{
@@ -196,7 +197,7 @@ try
 							$entry.Add($key, $template[$key])
 						}
 					}
-					Write-Verbose -verbose "Processing $entry" 
+					#Write-Verbose -verbose "Processing $entry" 
 					if (!$Connector.Result.Process($entry))
 					{
 						break;

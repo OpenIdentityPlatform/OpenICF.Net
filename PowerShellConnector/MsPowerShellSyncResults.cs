@@ -23,6 +23,9 @@
  */
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Org.IdentityConnectors.Framework.Common;
 using Org.IdentityConnectors.Framework.Common.Objects;
 using Org.IdentityConnectors.Framework.Spi;
 
@@ -156,17 +159,22 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                         cobld.AddAttribute(ConnectorAttributeBuilder.BuildEnabled(attr.Value is bool && (bool) attr.Value));
                     else
                     {
-                        if (attrValue is Array)
+                        if (attrValue == null)
                         {
-                            cobld.AddAttribute(ConnectorAttributeBuilder.Build(attrName, attrValue));
+                            cobld.AddAttribute(ConnectorAttributeBuilder.Build(attrName));
                         }
-                        else if (attrValue != null)
+                        else if (attrValue.GetType() == typeof(Object[]) || attrValue.GetType() == typeof(System.Collections.ICollection))
                         {
-                            cobld.AddAttribute(ConnectorAttributeBuilder.Build(attrName, attrValue));
+                            var list = new Collection<object>();
+                            foreach (var val in (ICollection)attrValue)
+                            {
+                                list.Add(FrameworkUtil.IsSupportedAttributeType(val.GetType()) ? val : val.ToString());
+                            }
+                            cobld.AddAttribute(ConnectorAttributeBuilder.Build(attrName, list));
                         }
                         else
                         {
-                            cobld.AddAttribute(ConnectorAttributeBuilder.Build(attrName));
+                            cobld.AddAttribute(ConnectorAttributeBuilder.Build(attrName, attrValue));
                         }
                     }
                 }

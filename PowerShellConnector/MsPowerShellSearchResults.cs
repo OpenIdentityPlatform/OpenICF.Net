@@ -118,7 +118,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                     {
                         cobld.AddAttribute(ConnectorAttributeBuilder.Build(attrName));
                     }
-                    else if (attrValue.GetType() == typeof(Object[]))
+                    else if (attrValue.GetType() == typeof(Object[]) || attrValue.GetType() == typeof(System.Collections.ICollection))
                     {
                         var list = new Collection<object>();
                         foreach (var val in (ICollection)attrValue)
@@ -129,9 +129,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                     }
                     else
                     {
-                        cobld.AddAttribute(FrameworkUtil.IsSupportedAttributeType(attrValue.GetType())
-                            ? ConnectorAttributeBuilder.Build(attrName, attrValue)
-                            : ConnectorAttributeBuilder.Build(attrName, attrValue.ToString()));
+                        cobld.AddAttribute(ConnectorAttributeBuilder.Build(attrName, attrValue));
                     }
                 }
             }
