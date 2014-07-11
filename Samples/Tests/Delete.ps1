@@ -1,4 +1,4 @@
-# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+﻿# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 # Copyright (c) 2014 ForgeRock AS. All Rights Reserved
 #
@@ -56,21 +56,15 @@
     Example 1     
 #>
 
-# Always put code in try/catch statement and make sure exceptions are rethrown to connector
+# Always put code in try/catch statement and make sure exceptions are re-thrown to connector
 try
 {
 if ($Connector.Operation -eq "DELETE")
 {
 	switch ($Connector.ObjectClass.Type)
 	{
-		"__ACCOUNT__" 	
-		{
-			if ($Connector.Uid.GetUidValue() -ne "smith")
-			{
-				throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.UnknownUidException("User does not exist")
-			}
-		}
-		"__GROUP__" 	{}
+		"__ACCOUNT__" 	{Remove-ConnectorObjectCache -ObjectClass $Connector.ObjectClass -Uid $Connector.Uid}
+		"__GROUP__" 	{Remove-ConnectorObjectCache -ObjectClass $Connector.ObjectClass -Uid $Connector.Uid}
 		"__ALL__" 		{throw "ICF Framework must reject this"}
 		"__TEST__" 		{Exception-Test -Operation $Connector.Operation -ObjectClass $Connector.ObjectClass -Uid $Connector.Uid -Options $Connector.Options}
 		"__SAMPLE__" 	{throw New-Object System.NotSupportedException("$($Connector.Operation) operation of type:$($Connector.ObjectClass.Type) is not supported")}
@@ -78,7 +72,7 @@ if ($Connector.Operation -eq "DELETE")
 	}
 }
 }
-catch #Rethrow the original exception
+catch #Re-throw the original exception
 {
 	throw
 }
