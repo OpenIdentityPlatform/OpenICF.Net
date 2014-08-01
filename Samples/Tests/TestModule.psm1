@@ -172,11 +172,11 @@ Function Get-ConnectorObjectTemplate {
 	$value["attributeBigDecimalMultivalue"] = (($bigDec0 -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal]), ($bigDec0 -as [Org.IdentityConnectors.Framework.Common.Objects.BigDecimal]))
 	
 	$gba = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray
-	[System.Text.Encoding]::UTF8.GetBytes("array") | ForEach-Object($gba.AppendByte($_))
+	[System.Text.Encoding]::UTF8.GetBytes("array") | ForEach-Object {$gba.AppendByte($_)}
 	$gba1 = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray
-	[System.Text.Encoding]::UTF8.GetBytes("item1") | ForEach-Object($gba.AppendByte($_))
+	[System.Text.Encoding]::UTF8.GetBytes("item1") | ForEach-Object {$gba.AppendByte($_)}
 	$gba2 = New-Object Org.IdentityConnectors.Common.Security.GuardedByteArray
-	[System.Text.Encoding]::UTF8.GetBytes("item1") | ForEach-Object($gba.AppendByte($_))
+	[System.Text.Encoding]::UTF8.GetBytes("item1") | ForEach-Object {$gba.AppendByte($_)}
 	
 	$value["attributeGuardedByteArray"] = $gba
 	$value["attributeGuardedByteArrayMultivalue"] = ($gba1, $gba2)
