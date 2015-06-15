@@ -234,4 +234,16 @@
   <data name="help_UseInterpretersPool" xml:space="preserve">
     <value>If true, the connector will leverage PowerShell RunSpace Pool.</value>
   </data>
+  <data name="display_MaxInterpretersPoolSize" xml:space="preserve">
+    <value>Maximum  Interperter Pool size</value>
+  </data>
+  <data name="display_MinInterpretersPoolSize" xml:space="preserve">
+    <value>Minimum Interperter Pool size</value>
+  </data>
+  <data name="help_MaxInterpretersPoolSize" xml:space="preserve">
+    <value>Defines the maximum size of the interpreter pool (defaults to 5)</value>
+  </data>
+  <data name="help_MinInterpretersPoolSize" xml:space="preserve">
+    <value>Defines the minimum size of the interpreter pool (defaults to 1)</value>
+  </data>
 </root>

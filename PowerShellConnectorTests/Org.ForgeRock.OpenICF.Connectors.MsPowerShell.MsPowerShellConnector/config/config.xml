@@ -39,4 +39,7 @@ your own identifying information:
   <property name="configuration.QueryFilterType" value="Native"/>
   <property name="configuration.SubstituteUidAndNameInQueryFilter" value="False"/>
   <property name="configuration.VariablesPrefix" value="Connector"/>
+  <property name="configuration.minInterpretersPoolSize" value="1"/>
+  <property name="configuration.maxInterpretersPoolSize" value="5"/>
+  <property name="configuration.UseInterpretersPool" value="true"/>
 </config>

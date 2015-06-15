@@ -145,6 +145,16 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
         public GuardedString Password
         { get; set; }
 
+        [ConfigurationProperty(DisplayMessageKey = "display_MinInterpretersPoolSize", HelpMessageKey = "help_MinInterpretersPoolSize",
+            GroupMessageKey = "group_PowerShell", Order = 23)]
+        public int minInterpretersPoolSize
+        { get; set; }
+
+        [ConfigurationProperty(DisplayMessageKey = "display_MaxInterpretersPoolSize", HelpMessageKey = "help_MaxInterpretersPoolSize",
+            GroupMessageKey = "group_PowerShell", Order = 24)]
+        public int maxInterpretersPoolSize
+        { get; set; }
+
 
         public MsPowerShellConfiguration()
         {
@@ -169,6 +179,9 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             Port = null;
             Login = "";
             Password = null;
+            minInterpretersPoolSize = 1;
+            maxInterpretersPoolSize = 5;
+
         }
 
         public override void Validate()
@@ -222,6 +235,16 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             {
                 throw new ConfigurationException("QueryFilterType must be Native|Map|Ldap|AdPsModule");
             }
+
+            if (minInterpretersPoolSize < 1 )
+            {
+                throw new ConfigurationException("minInterpretersPoolSize can not be less than 1");
+            }
+
+            if (maxInterpretersPoolSize < minInterpretersPoolSize)
+            {
+                throw new ConfigurationException("maxInterpretersPoolSize can not be less than minInterpretersPoolSize");
+            }
         }
 
 
@@ -269,6 +292,8 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                         {
                             _rsPool = RunspaceFactory.CreateRunspacePool();
                         }
+                        _rsPool.SetMinRunspaces(minInterpretersPoolSize);
+                        _rsPool.SetMaxRunspaces(maxInterpretersPoolSize);
                         _rsPool.Open();
                     }
                 }

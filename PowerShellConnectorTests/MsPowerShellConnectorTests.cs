@@ -23,14 +23,13 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Management.Automation;
 using System.Reflection;
 using System.Security;
+using System.Threading.Tasks;
 using MsPowerShellTestModule;
 using NUnit.Framework;
 using Org.ForgeRock.OpenICF.Connectors.MsPowerShell;
@@ -432,6 +431,48 @@ namespace MSPowerShellConnectorTests
                 Assert.AreEqual(res[0], uid.GetUidValue());    
             }
             
+        }
+
+        [Test]
+        [Category("ScriptOnConnector")]
+        public void TestScriptOnConnectorParalell()
+        {
+            Action<String, int> timeStamp = (prefix, test) =>
+            {
+                Console.WriteLine("{0}:{1} = {2}", prefix, test, DateTime.Now.ToString("O"));
+            };
+            var builder = new ScriptContextBuilder();
+            builder.ScriptLanguage = "POWERShell";
+            builder.ScriptText = "Start-Sleep -s 15; return Get-Date -Format o";
+            var longRunningContext = builder.Build();
+            builder.ScriptText = "Start-Sleep -s 10; return Get-Date -Format o";
+            var mediumRunningContext = builder.Build();
+            builder.ScriptText = "Start-Sleep -s 5; return Get-Date -Format o";
+            var shortRunningContext = builder.Build();
+            string[] result = new string[5];
+            var facade = GetFacade();
+            Parallel.ForEach(
+                new[]
+                {
+                    Pair<int, ScriptContext>.Of(0, longRunningContext),
+                    Pair<int, ScriptContext>.Of(1, mediumRunningContext),
+                    Pair<int, ScriptContext>.Of(2, shortRunningContext),
+                    Pair<int, ScriptContext>.Of(3, mediumRunningContext),
+                    Pair<int, ScriptContext>.Of(4, shortRunningContext)
+                },
+                new ParallelOptions() {MaxDegreeOfParallelism = 5},
+                (context, options) =>
+                {
+                    timeStamp("Start", context.First);
+                    var res = facade.RunScriptOnConnector(context.Second, null);
+                    timeStamp("End  ", context.First);
+                    var collection = res as List<object>;
+                    if (collection != null)
+                        result[context.First] = collection[0] as String;
+                });
+            Assert.Greater(result[0], result[1]);
+            Assert.Greater(result[0], result[2]);
+            Assert.Less(result[2], result[1]);
         }
 
         // =======================================================================
@@ -1112,9 +1153,9 @@ namespace MSPowerShellConnectorTests
 
                 string assemblyFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 string testModulePath = Path.GetFullPath(Path.Combine(assemblyFolder, "..\\..\\..\\Samples\\Tests\\TestModule.psm1"));
-                string objectChacheModulePath = typeof(ObjectCacheLibrary).Assembly.Location;
+                string objectCacheModulePath = typeof(ObjectCacheLibrary).Assembly.Location;
 
-                var importModules = new string[] { testModulePath, objectChacheModulePath };
+                var importModules = new string[] { testModulePath, objectCacheModulePath };
                 
 
                 APIConfiguration impl = TestHelpers.CreateTestConfiguration(clazz, propertyBag, "configuration");
