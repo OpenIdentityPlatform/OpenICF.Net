@@ -232,15 +232,15 @@ try
 	        }
 			# Test the DELETE without Connector object
 			Write-Verbose -verbose "Processing entry without Connector object"
+			$result = @{"SyncToken" = 17; "DeltaType" = "DELETE"; "Uid" = "Grp18"; "ObjectClass" = "__GROUP__"}
+			$Connector.Result.Process($result)
+			
 			$syncbld = New-Object Org.IdentityConnectors.Framework.Common.Objects.SyncDeltaBuilder
 			$syncbld.DeltaType = $deltatype::DELETE
-			$syncbld.Token = New-Object Org.IdentityConnectors.Framework.Common.Objects.SyncToken(17)
+			$syncbld.Token = New-Object Org.IdentityConnectors.Framework.Common.Objects.SyncToken(18)
 			$syncbld.Uid = "FooBar"
 			$syncbld.ObjectClass = [Org.IdentityConnectors.Framework.Common.Objects.ObjectClass]::ACCOUNT
 			$Connector.Result.Process($syncbld.Build())	
-			
-			$result = @{"SyncToken" = 18; "DeltaType" = "DELETE"; "Uid" = "Grp18"; "ObjectClass" = "__GROUP__"}
-			$Connector.Result.Process($result)
 			
 	        $Connector.Result.Complete(19)
 		}

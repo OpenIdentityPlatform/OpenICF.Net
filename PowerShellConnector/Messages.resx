@@ -246,4 +246,10 @@
   <data name="help_MinInterpretersPoolSize" xml:space="preserve">
     <value>Defines the minimum size of the interpreter pool (defaults to 1)</value>
   </data>
+  <data name="display_CustomProperties" xml:space="preserve">
+    <value>Custom Configuration Properties</value>
+  </data>
+  <data name="help_CustomProperties" xml:space="preserve">
+    <value>An array of Strings to define custom configuration properties where each property is defined like "name=value".</value>
+  </data>
 </root>

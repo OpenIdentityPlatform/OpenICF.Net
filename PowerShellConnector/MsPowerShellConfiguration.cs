@@ -38,6 +38,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
     public class MsPowerShellConfiguration : AbstractConfiguration, StatefulConfiguration
     {
         private Collection<String> _validScripts;
+        private string[] _customProperties;
 
         [ConfigurationProperty(DisplayMessageKey = "display_AuthenticateScriptFileName", HelpMessageKey = "help_AuthenticateScriptFileName",
             GroupMessageKey = "group_OperationScripts", Order = 1)]
@@ -132,7 +133,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 
         [ConfigurationProperty(DisplayMessageKey = "display_Port", HelpMessageKey = "help_Port",
             GroupMessageKey = "group_PowerShell", Order = 20)]
-        public String Port
+        public int Port
         { get; set; }
 
         [ConfigurationProperty(DisplayMessageKey = "display_Login", HelpMessageKey = "help_Login",
@@ -147,14 +148,37 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
 
         [ConfigurationProperty(DisplayMessageKey = "display_MinInterpretersPoolSize", HelpMessageKey = "help_MinInterpretersPoolSize",
             GroupMessageKey = "group_PowerShell", Order = 23)]
-        public int minInterpretersPoolSize
+        public int MinInterpretersPoolSize
         { get; set; }
 
         [ConfigurationProperty(DisplayMessageKey = "display_MaxInterpretersPoolSize", HelpMessageKey = "help_MaxInterpretersPoolSize",
             GroupMessageKey = "group_PowerShell", Order = 24)]
-        public int maxInterpretersPoolSize
+        public int MaxInterpretersPoolSize
         { get; set; }
 
+        [ConfigurationProperty(DisplayMessageKey = "display_CustomProperties", HelpMessageKey = "help_CustomProperties",
+            GroupMessageKey = "group_PowerShell", Order = 25)]
+        public string[] CustomProperties
+        {
+            get { return _customProperties; }
+            set
+            {
+                _customProperties = value;
+                if (_customProperties != null && _customProperties.Length > 0)
+                {
+                    foreach (var item in _customProperties)
+                    {
+                        var pair = item.Split(new char[]{'='},2);
+                        var name = pair[0].Trim();
+                        var val = pair[1].Trim();
+                        if (StringUtil.IsNotBlank(name) && StringUtil.IsNotBlank(val))
+                        {
+                            _propertyBag[name] = val;
+                        }
+                    }
+                }
+            }
+        }
 
         public MsPowerShellConfiguration()
         {
@@ -176,12 +200,12 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             NameAttributeName = Name.NAME;
             PsModulesToImport = new string[]{};
             Host = "";
-            Port = null;
+            Port = 5985;
             Login = "";
             Password = null;
-            minInterpretersPoolSize = 1;
-            maxInterpretersPoolSize = 5;
-
+            MinInterpretersPoolSize = 1;
+            MaxInterpretersPoolSize = 5;
+            CustomProperties = new string[]{};
         }
 
         public override void Validate()
@@ -236,14 +260,14 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                 throw new ConfigurationException("QueryFilterType must be Native|Map|Ldap|AdPsModule");
             }
 
-            if (minInterpretersPoolSize < 1 )
+            if (MinInterpretersPoolSize < 1 )
             {
-                throw new ConfigurationException("minInterpretersPoolSize can not be less than 1");
+                throw new ConfigurationException("MinInterpretersPoolSize can not be less than 1");
             }
 
-            if (maxInterpretersPoolSize < minInterpretersPoolSize)
+            if (MaxInterpretersPoolSize < MinInterpretersPoolSize)
             {
-                throw new ConfigurationException("maxInterpretersPoolSize can not be less than minInterpretersPoolSize");
+                throw new ConfigurationException("MaxInterpretersPoolSize can not be less than MinInterpretersPoolSize");
             }
         }
 
@@ -272,7 +296,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             }
         }
 
-        private RunspacePool _rsPool = null;
+        private RunspacePool _rsPool;
 
         public RunspacePool GetRunspacePool()
         {
@@ -292,8 +316,8 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
                         {
                             _rsPool = RunspaceFactory.CreateRunspacePool();
                         }
-                        _rsPool.SetMinRunspaces(minInterpretersPoolSize);
-                        _rsPool.SetMaxRunspaces(maxInterpretersPoolSize);
+                        _rsPool.SetMinRunspaces(MinInterpretersPoolSize);
+                        _rsPool.SetMaxRunspaces(MaxInterpretersPoolSize);
                         _rsPool.Open();
                     }
                 }

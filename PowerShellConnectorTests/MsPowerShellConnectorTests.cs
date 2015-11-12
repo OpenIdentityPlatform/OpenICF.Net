@@ -422,15 +422,42 @@ namespace MSPowerShellConnectorTests
         {
             var builder = new ScriptContextBuilder();
             builder.ScriptLanguage = "POWERShell";
-            builder.ScriptText = "Write-Warning \"Test\"; return $Connector.Arguments.uid.GetUidValue()";
+            builder.ScriptText = "Write-Warning \"Test ScriptOnConnector\"; return $Connector.Arguments.uid.GetUidValue()";
             var uid = new Uid("foo", "12345");
             builder.AddScriptArgument("uid", uid);
-            var res = GetFacade().RunScriptOnConnector(builder.Build(), null) as Collection<object>;
+            var res = GetFacade().RunScriptOnConnector(builder.Build(), null) as List<object>;
             if (res != null)
             {
-                Assert.AreEqual(res[0], uid.GetUidValue());    
+                Assert.AreEqual(res[0], uid.GetUidValue());
             }
-            
+            else
+            {
+                throw new ConnectorException("Not the expected result");
+            }
+                
+        }
+
+        [Test]
+        [Category("ScriptOnConnector")]
+        public void TestScriptOnConnectorWithCache()
+        {
+            var builder = new ScriptContextBuilder();
+            builder.ScriptLanguage = "POWERShell";
+            builder.ScriptText = "$Connector.Configuration.PropertyBag['cache'] = $Connector.Arguments.uid.GetUidValue()";
+            var uid = new Uid("foo", "12345");
+            builder.AddScriptArgument("uid", uid);
+            GetFacade().RunScriptOnConnector(builder.Build(), null);
+
+            builder.ScriptText = "return $Connector.Configuration.PropertyBag['cache']";
+            var res = GetFacade().RunScriptOnConnector(builder.Build(), null) as List<object>;
+            if (res != null)
+            {
+                Assert.AreEqual(res[0], uid.GetUidValue());
+            }
+            else
+            {
+                throw new ConnectorException("Not the expected result");
+            }
         }
 
         [Test]
@@ -703,7 +730,7 @@ namespace MSPowerShellConnectorTests
 
         [Test, TestCaseSource("SyncObjectClassProvider")]
         [Category("Sync")]
-        public void TestSyncAccount(ObjectClass objectClass)
+        public void TestSync(ObjectClass objectClass)
         {
             var result = new List<SyncDelta>();
             SyncToken lastToken = GetFacade().Sync(objectClass, new SyncToken(0), new SyncResultsHandler()
@@ -831,15 +858,15 @@ namespace MSPowerShellConnectorTests
                             return true;
                         }
                     }, null);
-            Assert.AreEqual(17, lastToken.Value);
-            Assert.AreEqual(7, result.Count);
+            Assert.AreEqual(19, lastToken.Value);
+            Assert.AreEqual(9, result.Count);
             int index = 10;
 
             foreach (var delta in result)
             {
                 Assert.AreEqual(index++, delta.Token.Value);
                 Assert.AreEqual(((int)delta.Token.Value) % 2 == 0 ? ObjectClass.ACCOUNT : ObjectClass.GROUP,
-                    delta.Object.ObjectClass);
+                    delta.ObjectClass);
             }
         }
 

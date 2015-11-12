@@ -322,7 +322,7 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             {
                 {Result, result},
                 {Username, username},
-                {Password, SecurityUtil.Decrypt(password)}
+                {Password, password}
             };
 
             ExecuteScript(GetScript(scriptName), CreateBinding(arguments, OperationType.AUTHENTICATE, objectClass, null, null, options));
@@ -582,6 +582,11 @@ namespace Org.ForgeRock.OpenICF.Connectors.MsPowerShell
             if (!"PowerShell".Equals(request.ScriptLanguage,StringComparison.CurrentCultureIgnoreCase))
             {
                 throw new ArgumentException("Script language must be PowerShell");
+            }
+
+            if (StringUtil.IsBlank(request.ScriptText))
+            {
+                throw new ArgumentException("Script text is empty");
             }
 
             try

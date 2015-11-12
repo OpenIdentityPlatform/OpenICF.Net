@@ -1,6 +1,6 @@
 ﻿# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2014 ForgeRock AS. All Rights Reserved
+# Copyright (c) 2014-2015 ForgeRock AS. All Rights Reserved
 #
 # The contents of this file are subject to the terms
 # of the Common Development and Distribution License
@@ -36,8 +36,8 @@
 	- <prefix>.Options: a handler to the Operation Options
 	- <prefix>.Operation: an OperationType correponding to the action ("AUTHENTICATE" here)
 	- <prefix>.ObjectClass: an ObjectClass describing the Object class (__ACCOUNT__ / __GROUP__ / other)
-	- <prefix>.Username: Usename String
-	- <prefix>.Password: clear text Password String
+	- <prefix>.Username: Username String
+	- <prefix>.Password: Password in GuardedString format
 	
 .RETURNS
 	Must return the user unique ID (__UID__).
@@ -54,6 +54,8 @@
     http://openicf.forgerock.org
 .EXAMPLE  
 #>
+
+$secutil = [Org.IdentityConnectors.Common.Security.SecurityUtil]
 
 # Always put code in try/catch statement and make sure exceptions are rethrown to connector
 try
@@ -73,7 +75,7 @@ switch ($Connector.ObjectClass.Type)
 			"TEST5" {throw New-Object Org.IdentityConnectors.Framework.Common.Exceptions.PasswordExpiredException}
 			"TESTOK1" 
 			{
-				if ( $Connector.Password -eq "Passw0rd")
+				if ( $secutil::Decrypt($Connector.Password) -eq "Passw0rd")
 				{
 					$Connector.Result.Uid = $Connector.Username
 				}
@@ -84,7 +86,7 @@ switch ($Connector.ObjectClass.Type)
 			}
 			"TESTOK2"
 			{
-				if ( $Connector.Password -eq "")
+				if ( $secutil::Decrypt($Connector.Password) -eq "")
 				{
 					$Connector.Result.Uid = New-Object Org.IdentityConnectors.Framework.Common.Objects.Uid($Connector.Username)
 				}
