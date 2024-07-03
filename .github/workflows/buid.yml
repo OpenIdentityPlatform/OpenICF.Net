@@ -19,6 +19,9 @@ jobs:
       - name: setup-msbuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Install-Package MSBuildTasks
+        run: Install-Package MSBuildTasks
+        
       - name: Restore Packages
         run: |
           nuget restore ConnectorFramework.sln
