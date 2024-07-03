@@ -11,17 +11,17 @@ jobs:
     runs-on: windows-2019
 
     steps:
-      - uses: actions/checkout@v4
-
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2
   
       - name: setup-msbuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Install-Package MSBuildTasks
-        run: Install-Package MSBuildTasks
-        
+      - name: Install-Package -Name MSBuildTasks
+        run: Install-Package -Name MSBuildTasks -AcceptLicense 
+
+      - uses: actions/checkout@v4
+
       - name: Restore Packages
         run: |
           nuget restore ConnectorFramework.sln
