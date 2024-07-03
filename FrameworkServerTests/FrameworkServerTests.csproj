@@ -58,7 +58,9 @@
     <Reference Include="Google.Protobuf">
       <HintPath>..\packages\Google.ProtocolBuffers.3\lib\Google.Protobuf.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
