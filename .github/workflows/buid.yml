@@ -18,7 +18,7 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Install-Package -Name MSBuildTasks
-        run: Install-Package -Name MSBuildTasks -AcceptLicense -Source "https://api.nuget.org/v3/index.json"
+        run: Install-Package -Name MSBuildTasks -Source "https://api.nuget.org/v3/index.json"
 
       - uses: actions/checkout@v4
 
