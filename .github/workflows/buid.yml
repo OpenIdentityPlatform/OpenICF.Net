@@ -17,10 +17,10 @@ jobs:
       - name: setup-msbuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Install-Package MSBuildTasks
-        run: nuget install MSBuildTasks -OutputDirectory build
-
       - uses: actions/checkout@v4
+
+      - name: Install-Package MSBuildTasks
+        run: nuget install MSBuildTasks 
 
       - name: Restore Packages
         run: |
