@@ -18,7 +18,7 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Install-Package MSBuildTasks
-        run: NuGet\Install-Package MSBuildTasks -Version 1.5.0.235
+        run: nuget install MSBuildTasks -OutputDirectory build
 
       - uses: actions/checkout@v4
 
