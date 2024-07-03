@@ -17,8 +17,8 @@ jobs:
       - name: setup-msbuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Install-Package -Name MSBuildTasks
-        run: dotnet add package MSBuildTasks --version 1.5.0.235
+      - name: Install-Package MSBuildTasks
+        run: NuGet\Install-Package MSBuildTasks -Version 1.5.0.235
 
       - uses: actions/checkout@v4
 
@@ -30,6 +30,6 @@ jobs:
           
       - name: Build solution
         run: |
-          msbuild ConnectorFramework.sln -t:rebuild -property:Configuration=Release
-          msbuild dotnet-connector\DotNetConnectors.sln -t:rebuild -property:Configuration=Release
-          msbuild powershell-connector\PowerShellConnector.sln -t:rebuild -property:Configuration=Release
+          msbuild ConnectorFramework.sln -t:rebuild -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net
+          msbuild dotnet-connector\DotNetConnectors.sln -t:rebuild -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net
+          msbuild powershell-connector\PowerShellConnector.sln -t:rebuild -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net
