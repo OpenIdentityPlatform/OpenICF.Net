@@ -30,7 +30,7 @@
     <Copyright>Copyright 2014 ForgeRock AS. All rights reserved.</Copyright>
     <CommonBuildDir>$(MSBuildProjectDirectory)\..\Build</CommonBuildDir>
     <ForgeRockLegal>false</ForgeRockLegal>
-    MSBuildCommunityTasksPath>$(SolutionDir)\MSBuildTasks.1.5.0.235\tools</MSBuildCommunityTasksPath>
+    <MSBuildCommunityTasksPath>$(SolutionDir)\MSBuildTasks.1.5.0.235\tools</MSBuildCommunityTasksPath>
   </PropertyGroup>
 
   <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
