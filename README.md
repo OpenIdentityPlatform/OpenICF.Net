@@ -21,7 +21,7 @@ Many connectors have been built within the OpenICF framework, and are maintained
 This project is licensed under the [Common Development and Distribution License (CDDL)](https://github.com/OpenIdentityPlatform/OpenICF.Net/blob/master/LICENSE.md). 
 
 ## Downloads 
-https://github.com/OpenIdentityPlatform/OpenICF/releases)
+https://github.com/OpenIdentityPlatform/OpenICF.Net/releases
 
 ## Support and Mailing List Information
 * OpenICF Community Wiki: https://github.com/OpenIdentityPlatform/OpenICF/wiki
