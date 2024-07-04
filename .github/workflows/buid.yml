@@ -39,4 +39,16 @@ jobs:
           nuget restore powershell-connector\PowerShellConnector.sln
           msbuild powershell-connector\PowerShellConnector.sln -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net /p:OPENICF_HOME=$PWD\FrameworkServer\bin\Release /p:NUNIT_HOME=$PWD\NUnit.Runners.2.6.2\tools
 
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenICF.NET
+          retention-days: 5
+          path:  |
+            ServiceInstall\bin\Release\openicf-*.zip
+            ServiceInstall\bin\Release\openicf-*.msi
+            dotnet-connector\Build\*.zip
+            powershell-connector\Build\*.zip
+            
+
 
