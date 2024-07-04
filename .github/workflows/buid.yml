@@ -36,6 +36,6 @@ jobs:
       - name: Build powershell-connector\PowerShellConnector.sln
         run: |
           nuget restore powershell-connector\PowerShellConnector.sln
-          msbuild powershell-connector\PowerShellConnector.sln -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net
+          msbuild powershell-connector\PowerShellConnector.sln -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net /p:OPENICF_HOME=$PWD\FrameworkServer\bin\Release
 
 
