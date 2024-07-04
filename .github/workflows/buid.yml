@@ -47,8 +47,8 @@ jobs:
           path:  |
             ServiceInstall\bin\Release\openicf-*.zip
             ServiceInstall\bin\Release\openicf-*.msi
-            dotnet-connector\Build\*.zip
-            powershell-connector\Build\*.zip
+            dotnet-connector\Build\*Connector-*.zip
+            powershell-connector\Build\*Connector-*.zip
             
 
 
