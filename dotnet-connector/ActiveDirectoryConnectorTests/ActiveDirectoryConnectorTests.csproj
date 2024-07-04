@@ -79,6 +79,7 @@
       <HintPath>$(ConnectorFrameworkDir)\TestCommon.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
