@@ -27,13 +27,11 @@ jobs:
         run: |
           nuget restore ConnectorFramework.sln
           msbuild ConnectorFramework.sln -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net
-          $Env:OPENICF_HOME="$PWD\FrameworkServer\bin\Release" 
-          dir env:
 
       - name: Build dotnet-connector\DotNetConnectors.sln
         run: |
           nuget restore dotnet-connector\DotNetConnectors.sln
-          msbuild dotnet-connector\DotNetConnectors.sln -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net
+          msbuild dotnet-connector\DotNetConnectors.sln -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net /p:OPENICF_HOME=$PWD\FrameworkServer\bin\Release
 
       - name: Build powershell-connector\PowerShellConnector.sln
         run: |
