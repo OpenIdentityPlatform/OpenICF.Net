@@ -72,7 +72,7 @@
         <CreateItem Include="$(OutputPath)\*Tests.dll">
             <Output TaskParameter="Include" ItemName="TestAssembly" />
         </CreateItem>
-        <MSBuild.Community.Tasks.NUnit DisableShadowCopy="true" Assemblies="@(TestAssembly)" ExcludeCategory="LongRunning" ToolPath="$(NUNIT_HOME)\bin"  OutputXmlFile="$(OutputPath)\NUnitResults_$(Configuration).xml" ShowLabels="True">
+        <MSBuild.Community.Tasks.NUnit DisableShadowCopy="true" Assemblies="@(TestAssembly)" ExcludeCategory="LongRunning" ToolPath="$(NUNIT_HOME)"  OutputXmlFile="$(OutputPath)\NUnitResults_$(Configuration).xml" ShowLabels="True">
             <Output TaskParameter="ExitCode" PropertyName="NUnitResult" />
         </MSBuild.Community.Tasks.NUnit>
     </Target>
