@@ -1,0 +1,54 @@
+name: Build 
+
+on:
+  push:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: windows-2019
+
+    steps:
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+  
+      - name: setup-msbuild
+        uses: microsoft/setup-msbuild@v2
+
+      - uses: actions/checkout@v4
+
+      - name: Install-Package 
+        run: |
+          nuget install MSBuildTasks -Version 1.5.0.235
+          nuget install NUnit.Runners -Version 2.6.2
+
+      - name: Build ConnectorFramework.sln
+        run: |
+          nuget restore ConnectorFramework.sln
+          msbuild ConnectorFramework.sln -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net /p:NUNIT_HOME=$PWD\NUnit.Runners.2.6.2\tools
+
+      - name: Build dotnet-connector\DotNetConnectors.sln
+        run: |
+          nuget restore dotnet-connector\DotNetConnectors.sln
+          msbuild dotnet-connector\DotNetConnectors.sln -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net /p:OPENICF_HOME=$PWD\FrameworkServer\bin\Release /p:NUNIT_HOME=$PWD\NUnit.Runners.2.6.2\tools
+
+      - name: Build powershell-connector\PowerShellConnector.sln
+        run: |
+          nuget restore powershell-connector\PowerShellConnector.sln
+          msbuild powershell-connector\PowerShellConnector.sln -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net /p:OPENICF_HOME=$PWD\FrameworkServer\bin\Release /p:NUNIT_HOME=$PWD\NUnit.Runners.2.6.2\tools
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenICF.NET
+          retention-days: 5
+          path:  |
+            ServiceInstall\bin\Release\openicf-*.zip
+            ServiceInstall\bin\Release\openicf-*.msi
+            dotnet-connector\Build\*Connector-*.zip
+            powershell-connector\Build\*Connector-*.zip
+            
+
+

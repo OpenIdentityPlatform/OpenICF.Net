@@ -30,9 +30,10 @@
         <!--FrameworkRootDir>$(MSBuildProjectDirectory)\..\..\</FrameworkRootDir-->
         <FrameworkRootDir>$(MSBuildProjectDirectory)</FrameworkRootDir>
         <TreatTestFailureAsBuildFailure>true</TreatTestFailureAsBuildFailure>
+        <MSBuildCommunityTasksPath>$(SolutionDir)\MSBuildTasks.1.5.0.235\tools</MSBuildCommunityTasksPath>
     </PropertyGroup>
 
-    <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" />  
+    <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />  
 
     <Target Name="GenerateAssemblyInfo">
         <Version VersionFile="$(VersionFileIn)">
@@ -71,7 +72,7 @@
         <CreateItem Include="$(OutputPath)\*Tests.dll">
             <Output TaskParameter="Include" ItemName="TestAssembly" />
         </CreateItem>
-        <MSBuild.Community.Tasks.NUnit DisableShadowCopy="true" Assemblies="@(TestAssembly)" ExcludeCategory="LongRunning" ToolPath="$(NUNIT_HOME)\bin" OutputXmlFile="$(OutputPath)\NUnitResults_$(Configuration).xml" ShowLabels="True">
+        <MSBuild.Community.Tasks.NUnit DisableShadowCopy="true" Assemblies="@(TestAssembly)" ExcludeCategory="LongRunning" ToolPath="$(NUNIT_HOME)"  OutputXmlFile="$(OutputPath)\NUnitResults_$(Configuration).xml" ShowLabels="True">
             <Output TaskParameter="ExitCode" PropertyName="NUnitResult" />
         </MSBuild.Community.Tasks.NUnit>
     </Target>
