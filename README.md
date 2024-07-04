@@ -1,6 +1,6 @@
 # <img alt="OpenICF Logo" src="https://github.com/OpenIdentityPlatform/OpenICF/raw/master/logo.png" width="300"/>
 [![Latest release](https://img.shields.io/github/release/OpenIdentityPlatform/OpenICF.Net.svg)](https://github.com/OpenIdentityPlatform/OpenICF.Net/releases)
-[![Build](https://github.com/OpenIdentityPlatform/OpenICF.Net/actions/workflows/build.yml/badge.svg)](https://github.com/OpenIdentityPlatform/OpenICF.Net/actions/workflows/build.yml)
+[![Build](https://github.com/OpenIdentityPlatform/OpenICF.Net/actions/workflows/buid.yml/badge.svg)](https://github.com/OpenIdentityPlatform/OpenICF.Net/actions/workflows/buid.yml)
 [![Issues](https://img.shields.io/github/issues/OpenIdentityPlatform/OpenICF.Net.svg)](https://github.com/OpenIdentityPlatform/OpenIC.NetF/issues)
 [![Last commit](https://img.shields.io/github/last-commit/OpenIdentityPlatform/OpenICF.Net.svg)](https://github.com/OpenIdentityPlatform/OpenICF.Net/commits/master)
 [![License](https://img.shields.io/badge/license-CDDL-blue.svg)](https://github.com/OpenIdentityPlatform/OpenICF.Net/blob/master/LICENSE.md)
