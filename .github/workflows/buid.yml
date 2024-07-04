@@ -20,16 +20,23 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install-Package MSBuildTasks
-        run: nuget install MSBuildTasks -Version 1.5.0.235
+        run: |
+          nuget install MSBuildTasks -Version 1.5.0.235
 
-      - name: Restore Packages
+      - name: Build ConnectorFramework.sln
         run: |
           nuget restore ConnectorFramework.sln
-          nuget restore dotnet-connector\DotNetConnectors.sln
-          nuget restore powershell-connector\PowerShellConnector.sln
-          
-      - name: Build solution
+          msbuild ConnectorFramework.sln -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net
+          set OPENICF_HOME=%cd%\FrameworkServer
+
+      - name: Build dotnet-connector\DotNetConnectors.sln
         run: |
-          msbuild ConnectorFramework.sln -t:rebuild -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net
-          msbuild dotnet-connector\DotNetConnectors.sln -t:rebuild -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net
-          msbuild powershell-connector\PowerShellConnector.sln -t:rebuild -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net
+          nuget restore dotnet-connector\DotNetConnectors.sln
+          msbuild dotnet-connector\DotNetConnectors.sln -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net
+
+      - name: Build powershell-connector\PowerShellConnector.sln
+        run: |
+          nuget restore dotnet-connector\DotNetConnectors.sln
+          msbuild dotnet-connector\DotNetConnectors.sln -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net
+
+
