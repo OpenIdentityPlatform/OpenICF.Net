@@ -27,7 +27,8 @@ jobs:
         run: |
           nuget restore ConnectorFramework.sln
           msbuild ConnectorFramework.sln -property:Configuration=Release /p:ZipRelease=true /p:ProductName=OpenICF.Net
-          set OPENICF_HOME=%cd%\FrameworkServer && echo %OPENICF_HOME%
+          set OPENICF_HOME=%cd%\FrameworkServer 
+          echo "OPENICF_HOME=%OPENICF_HOME%"
 
       - name: Build dotnet-connector\DotNetConnectors.sln
         run: |
