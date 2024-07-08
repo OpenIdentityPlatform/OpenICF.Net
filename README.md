@@ -5,11 +5,10 @@
 [![Last commit](https://img.shields.io/github/last-commit/OpenIdentityPlatform/OpenICF.Net.svg)](https://github.com/OpenIdentityPlatform/OpenICF.Net/commits/master)
 [![License](https://img.shields.io/badge/license-CDDL-blue.svg)](https://github.com/OpenIdentityPlatform/OpenICF.Net/blob/master/LICENSE.md)
 [![Downloads](https://img.shields.io/github/downloads/OpenIdentityPlatform/OpenICF.Net/total.svg)](https://github.com/OpenIdentityPlatform/OpenICF.Net/releases)
-[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/OpenIdentityPlatform/OpenIDM)
 [![Top language](https://img.shields.io/github/languages/top/OpenIdentityPlatform/OpenICF.Net.svg)](https://github.com/OpenIdentityPlatform/OpenICF.Net)
 [![Code size in bytes](https://img.shields.io/github/languages/code-size/OpenIdentityPlatform/OpenICF.Net.svg)](https://github.com/OpenIdentityPlatform/OpenICF.Net)
 
-The Open Identity Connector Framework (OpenICF) project provides interoperability between identity, compliance, and risk management solutions. An OpenICF Connector enables provisioning software, such as [OpenIDM](https://github.com/OpenIdentityPlatform/OpenIDM), to manage the identities maintained by a specific identity provider.
+The Open Identity Connector Framework (OpenICF.Net) project provides interoperability between identity, compliance, and risk management solutions. An OpenICF Connector enables provisioning software, such as [OpenIDM](https://github.com/OpenIdentityPlatform/OpenIDM), to manage the identities maintained by a specific identity provider.
 
 OpenICF connectors provide a consistent layer between identity applications and target resources and expose a set of operations for the complete lifecycle of an identity. The connectors provide a way to decouple applications from the target resources to which data is provisioned.
 
@@ -23,13 +22,12 @@ This project is licensed under the [Common Development and Distribution License 
 ## Downloads 
 https://github.com/OpenIdentityPlatform/OpenICF.Net/releases
 
-## Support and Mailing List Information
-* OpenICF Community Wiki: https://github.com/OpenIdentityPlatform/OpenICF/wiki
-* OpenIDM Community Mailing List: open-identity-platform-openidm@googlegroups.com
-* OpenIDM Community Archive: https://groups.google.com/d/forum/open-identity-platform-openidm
-* OpenIDM Community on Gitter: https://gitter.im/OpenIdentityPlatform/OpenIDM
-* OpenIDM Commercial support RFP: support@3a-systems.ru (English, Russian)
-
+## Support
+* OpenICF.Net Community [documentation](https://github.com/OpenIdentityPlatform/OpenICF.Net/wiki)
+* OpenICF.Net Community [discussions](https://github.com/OpenIdentityPlatform/OpenICF.Net/discussions)
+* OpenICF.Net Community [issues](https://github.com/OpenIdentityPlatform/OpenICF.Net/issues)
+* OpenICF.Net [commercial support](https://github.com/OpenIdentityPlatform/.github/wiki/Approved-Vendor-List)
+ 
 ## Contributing
 Please, make [Pull request](https://github.com/OpenIdentityPlatform/OpenICF.Net/pulls)
 
