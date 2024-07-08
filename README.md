@@ -10,7 +10,7 @@
 
 The Open Identity Connector Framework (OpenICF.Net) project provides interoperability between identity, compliance, and risk management solutions. An OpenICF Connector enables provisioning software, such as [OpenIDM](https://github.com/OpenIdentityPlatform/OpenIDM), to manage the identities maintained by a specific identity provider.
 
-OpenICF connectors provide a consistent layer between identity applications and target resources and expose a set of operations for the complete lifecycle of an identity. The connectors provide a way to decouple applications from the target resources to which data is provisioned.
+OpenICF.NET connectors provide a consistent layer between identity applications and target resources and expose a set of operations for the complete lifecycle of an identity. The connectors provide a way to decouple applications from the target resources to which data is provisioned.
 
 OpenICF focuses on provisioning and identity management but also provides general-purpose capabilities, including authentication, creation, reading, updating, deletion, searching, scripting, and synchronization operations. Connector bundles rely on the OpenICF Framework, but applications remain completely separate from the connector bundles. This enables you to change and update connectors without changing your application or its dependencies.
 
